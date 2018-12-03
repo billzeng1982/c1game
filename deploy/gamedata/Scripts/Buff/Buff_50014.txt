@@ -1,0 +1,71 @@
+--[[
+名称：减速buff
+类型：地载阵先锋部队buff
+描述：普攻对敌方造成减速
+--]]
+local ThisScriptId = 50014;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local rSource = LuaDataAgt:GetBuffSource();
+
+	--buff时间设置
+	local iTime = 2;
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, iTime);
+
+	--设置BUFF速度
+	local iSpeed = LuaDataAgt:GetLuaDataAgtShareValue();
+	--local iSpeed = 80 / 100;
+	LuaDataAgt:ChgSpeedByRatio( - 1 - iSpeed);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local rSource = LuaDataAgt:GetBuffSource();
+
+	local iSpeed = LuaDataAgt:GetLuaDataAgtShareValue();
+	--local iSpeed = 80 / 100;
+	LuaDataAgt:ChgSpeedByRatio( 1 + iSpeed);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+
+	return FilterValue;
+end
+
+Buff_50014 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+	func_doFilter = doFilter;
+}

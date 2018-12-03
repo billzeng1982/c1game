@@ -1,0 +1,73 @@
+--[[
+名称：裸衣大战
+类型：主动技能
+描述：嘲讽前方一个部队，极大提升攻击力
+--]]
+local ThisScriptId = 7044;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 0, 40, 60);
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);		 
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+	
+	--目标是对面距离最近的
+	LuaDataAgt:RemoveNotMiniTarget(targetList, CURRENT_VALUE_TYPE.DISTANCE);
+	
+	--没有技能框 清除其它技能框
+	LuaDataAgt:MapDrawRectangle(0,12,64,0,0);
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+	--AI操作需要至少命中n人，玩家操作无要求
+	if (AIId == 0) then
+		
+	else
+		if targetList.Count > 0 then
+			return true;
+		else
+			return false;
+		end
+	end
+	return true;
+	
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 0, 40, 60);
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	--目标是对面距离最近的
+	LuaDataAgt:RemoveNotMiniTarget(targetList, CURRENT_VALUE_TYPE.DISTANCE);	
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	for i=0,targetList.Count-1 do	
+		--嘲讽buff
+		targetList:get_Item(i):AddBuff(52, LuaDataAgt, targetList);
+	end
+	
+	--许褚自加buff
+	LuaDataAgt:AddBuff(539, LuaDataAgt, nil);
+	LuaDataAgt:InterruptSiege();
+end
+
+GeneralSkill_7044 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+}

@@ -1,0 +1,82 @@
+--[[
+名称：东山再起
+类型：主动技能
+描述：复活时间为0的BUFF
+--]]
+local ThisScriptId = 57;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置技能公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--没有技能框 清除其它技能框
+	LuaDataAgt:ClearSkillRange();
+	LuaDataAgt:ClearAllSkillTarget();
+
+	--AI操作需要至少有一个血量低于50%的目标，玩家操作无要求
+	if (AIId == 0) then
+
+	else
+		local maxHp = LuaDataAgt:GetHp(VALUE_TYPE.RUNTIME_CONF);
+		local curHp = LuaDataAgt:GetHp(VALUE_TYPE.CURRENT);
+		if curHp / maxHp < 0.2 then
+			return true;
+		else
+			return false;
+		end
+	end
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+
+	--设置技能目标为自己，表示该技能有目标，才会播放受击特效，生效会延迟
+	local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.NONE);
+end
+
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	-- 添加Buff
+	LuaDataAgt:AddBuff(ThisScriptId, LuaDataAgt, nil);
+
+	local TarPos = LuaDataAgt:GetCurPos();
+	LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_LiJiFuHuo", LuaDataAgt, TarPos, TarPos, 0, true); -- 延迟0播该特效
+
+	if LuaDataAgt:IsHaveActiveSkillCheats(2) then     --秘籍2：回血BUFF
+	    LuaDataAgt:AddBuff(7, LuaDataAgt, nil);
+	end
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+
+	local WitAtk = rSource:GetWitAtk(VALUE_TYPE.CURRENT);
+	local Base = rSource:GetActiveSkillBaseValue(2);
+	local Ratio = rSource:GetActiveSkillRateValue(2);
+	local hpTotal = rSource:GetHp(VALUE_TYPE.RUNTIME_CONF);
+	local HpRatio = Base + ((WitAtk) * Ratio);
+	local MinusHpRatio = 1 - HpRatio / 100;
+
+	iRet = hpTotal * MinusHpRatio;
+
+	return -iRet;
+end
+
+
+GeneralSkill_57= {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+
+	func_doFormula = doFormula;
+}

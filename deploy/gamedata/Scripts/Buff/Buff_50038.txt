@@ -1,0 +1,57 @@
+--[[
+名称：阵法通用buff
+类型：6个阵法通用
+描述：增加法防
+--]]
+local ThisScriptId = 50038;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	
+	local WitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF);
+	print("1111111111111111111111-----"..WitDef);
+	local WitDefChgValue = WitDef * LuaDataAgt:GetResTacticsBuffValue(ThisScriptId);
+	LuaDataAgt:SetShareValue(0, WitDefChgValue);
+	
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+    
+	local WitDefClear =  LuaDataAgt:GetShareValue(0);
+    LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT,-WitDefClear);
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+    local WitDefAdd =  LuaDataAgt:GetShareValue(0);
+    LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT,WitDefAdd);
+	print("2222222222222222222-----"..WitDefAdd);
+	
+	local TarPos = LuaDataAgt:GetCurPos();
+	LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_FaFangShangSheng", LuaDataAgt, TarPos, TarPos, 6, true); -- 延迟0播该特效
+	print("a a a a a a a a a a a a a a a a"..LuaDataAgt:GetShareValue(0));
+
+end
+
+
+Buff_50038 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

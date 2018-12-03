@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+
+<metalib tagsetversion="1" name="CombineSvrCfg" version="1" >
+	<struct name="CombineSvrCfg" version="1"  desc="主配置结构">
+		<entry name="PingFreq" 			        type="int"      defaultvalue="3600"/>
+        <entry name="BeCombinedSidCount" 	    type="uint8"    desc="被合并的服务器id数量"/>
+        <entry name="BeCombinedSidList" 	    type="uint32"   count="32" desc="被合并的服务器id列表" refer="BeCombinedSidCount"/>
+        <entry name="MysqlDBAddr" 		        type="string"   size="20" />
+		<entry name="MysqlDBName" 		        type="string"   size="32" />
+		<entry name="MysqlPort" 			        type="uint16" />
+		<entry name="MysqlUser" 			        type="string"   size="32" />
+        <entry name="MysqlIp" 			        type="string"   size="32" />
+		<entry name="MysqlPassword" 		        type="string"   size="32" />
+        <entry name="MysqlThreadQBaseShmKey"    type="int" defaultvalue="0" />
+        <entry name="MysqlThreadQSize" 		    type="uint32" desc="主从线程间通信管道大小" />
+	</struct>
+</metalib>
+

@@ -1,0 +1,60 @@
+--[[
+名称：战场buff--加攻击
+类型：战场buff
+描述：触碰以后加攻击--]]
+local ThisScriptId = 20001;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+local currPos = LuaDataAgt:GetCurPos();
+local strAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.CURRENT);
+local witAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.CURRENT);
+local ChgValue_1 = strAtk * 0.1;
+local ChgValue_2 = witAtk * 0.1;
+
+LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,ChgValue_1);
+LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,ChgValue_2);
+LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_WuGongShangSheng", LuaDataAgt, currPos, currPos, 0, true);
+LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_FaGongShangSheng", LuaDataAgt, currPos, currPos, 1, true);
+LuaDataAgt:PlayFX("Prefabs/BuffEffect/Master_Fenyong", LuaDataAgt, currPos, currPos, 0.3, true);
+
+
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+
+end
+
+Buff_20001 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+	func_doFilter = doFilter;
+}

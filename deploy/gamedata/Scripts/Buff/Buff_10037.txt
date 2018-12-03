@@ -1,0 +1,66 @@
+--[[
+名称：苦肉之计
+类型：主动技能
+描述：扣自己血，大幅提高移速和攻击
+--]]
+local ThisScriptId = 10037;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--buff时间设置
+	local itime =source:GetActiveSkillAdditionValue(4);	--时间
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+	
+	--属性加减
+	local atk = source:GetActiveSkillAdditionValue(3);   --物攻
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, atk);
+	
+	local speed = 1 + source:GetActiveSkillAdditionValue(2) / 100;	--速度
+	LuaDataAgt:ChgSpeedByRatio(speed);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+    local source = LuaDataAgt:GetBuffSource();
+	
+	--属性加减
+	local atk = source:GetActiveSkillAdditionValue(3);   --物攻
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -atk);
+	
+	local speed = 1 + source:GetActiveSkillAdditionValue(2) / 100;	--速度
+	LuaDataAgt:ChgSpeedByRatio(-speed);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end 
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+					
+Buff_10037 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

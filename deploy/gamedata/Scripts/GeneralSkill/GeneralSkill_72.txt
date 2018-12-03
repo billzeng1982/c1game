@@ -1,0 +1,126 @@
+--[[
+名称：酒池肉林
+类型：主动技能
+描述：标记周围的敌人，减防，如果杀死就回血
+--]]
+local ThisScriptId = 72;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置公式
+	--LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+		-- 添加HP Filter，过滤对敌方的最终伤害（执行优先级靠后，值越小越靠后）
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, -3);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(1) then                   --秘籍1：范围扩大
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20*1.05, 0);	--技能的范围
+	    LuaDataAgt:MapDrawCircle(0,20*1.05);
+	else
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20, 0);	--技能的范围
+	    LuaDataAgt:MapDrawCircle(0,20);
+	end
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);		 
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+	
+	--没有技能框 清除其它技能框
+	
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+	--AI操作需要至少命中n人，玩家操作无要求
+	if (AIId == 0) then
+		
+	else
+		if targetList.Count > 0 then
+			return true;
+		else
+			return false;
+		end
+	end
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(1) then                   --秘籍1：范围扩大
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20*1.05, 0);	--技能的范围
+	else
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20, 0);	--技能的范围
+	end
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	
+	for i = 0,targetList.Count - 1 do
+		local target = targetList:get_Item(i);
+		target:AddBuff(ThisScriptId, LuaDataAgt, nil);
+		
+		local TarPos = target:GetCurPos();
+		target:PlayFX("Prefabs/BasicEffect/3D_CharEff_WuGongXiaJiang", target, TarPos, TarPos, 0, true); -- 延迟0播该特效		
+	end
+	
+	LuaDataAgt:InterruptSiege();
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+
+	if iFilterType == FILTER_TYPE.HP then
+		local iHp = FilterValue.m_fFoo1;
+		local Target = FilterValue:GetTarget();
+		if iHp < 0  and IsSource and Target:HasBuff(72) then --判断敌方是否有标记buff
+		
+			local Ratio = LuaDataAgt: GetActiveSkillBaseValue(2)/100;
+			local SuckBlood = iHp * Ratio;
+			--吸血
+			LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, -SuckBlood, LuaDataAgt,VALUE_CHG_TYPE.CHG_HP_COMM, 0, 221);
+			
+			if not IsOnServer then
+				local TarPos = LuaDataAgt:GetCurPos();
+				LuaDataAgt:PlayFX("Prefabs/BuffEffect/Buff_JiaXue",  LuaDataAgt, TarPos, TarPos, 0, true);
+			end
+		end	
+	end
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = -iDamageRef;
+	local WitAtk = rSource:GetWitAtk(VALUE_TYPE.CURRENT);
+	local Base = rSource:GetActiveSkillBaseValue(2);
+	local Ratio = rSource:GetActiveSkillRateValue(2);
+	local addHpRatio = Base + ((WitAtk) * Ratio);
+	if LuaDataAgt:IsHaveActiveSkillCheats(2) then                   --秘籍2：吸血比例提高20%
+	    addHpRatio = addHpRatio + 20;
+	end
+	local addHp = iRet * addHpRatio / 100;
+	iRet = addHp;
+	
+	return iRet;
+end
+
+GeneralSkill_72 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	func_doFilter = doFilter;
+	func_doFormula = doFormula;
+}

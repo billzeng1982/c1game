@@ -1,0 +1,55 @@
+--[[
+名称：力战不疲
+类型：星级被动Buff
+描述：每次枪击和乱战，会为对手增加一个易伤效果，使之受到的伤害增加3%，持续10秒，最多可叠加3层
+--]]
+local ThisScriptId = 5461;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local buffLevel = LuaDataAgt:GetBuffLevel();
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 10);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	if iFilterType == FILTER_TYPE.HP and not IsSource then
+		local iHp = FilterValue.m_fFoo1;
+		if iHp < 0 then
+			local buffLevel = LuaDataAgt:GetBuffLevel();
+			FilterValue.m_fFoo1 = (buffLevel * 0.03 + 1) * iHp;
+		end
+	end
+end
+
+Buff_5461 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

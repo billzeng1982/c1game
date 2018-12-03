@@ -1,0 +1,87 @@
+--[[
+名称：周泰buff效果
+类型：大招觉醒buff
+描述：反伤buff+防御
+--]]
+local ThisScriptId = 617;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	-- 添加血量过滤处理
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, -5);
+	print("-----------------");
+	
+	if not IsOnServer then
+		local CurPos = LuaDataAgt:GetCurPos();
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_WuFangShangSheng",LuaDataAgt,CurPos, CurPos, 0, true);
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	if IsOnServer then
+		LuaDataAgt:SetSkillEnable(false);
+		return;
+	end
+	--一场战斗中只生效一次
+	LuaDataAgt:SetSkillEnable(false);
+
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	if iFilterType == FILTER_TYPE.HP then
+		if not IsOnServer and not IsSource  then
+			local iHp = FilterValue.m_fFoo1;
+			if iHp < 0 then
+				local Ratio = LuaDataAgt:GetActiveSkillBaseValue(1) / 100;
+				local iHpback= iHp * Ratio;
+				local Source = FilterValue:GetSource();
+				local MaxDamge = LuaDataAgt:GetStrAtk(VALUE_TYPE.CURRENT);
+				MaxDamge = 5 * MaxDamge; -- 最高自身物攻5倍伤害
+				--local SourceHp = Source: GetHp(VALUE_TYPE.RUNTIME_CONF)*0.2;
+				--print("SourceHp="..SourceHp);
+				iHpback = math.min(-iHpback,MaxDamge); --保护，以免反伤值过大
+				if not IsOnServer then
+				Source:ChgHp(VALUE_TYPE.CURRENT, -iHpback, Source, VALUE_CHG_TYPE.CHG_HP_COMM, 0, 0);
+				end
+			end
+		end
+	end
+	return FilterValue;
+end
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+
+end
+
+Buff_617 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+	func_doFilter = doFilter;
+	func_doFormula = doFormula;
+}

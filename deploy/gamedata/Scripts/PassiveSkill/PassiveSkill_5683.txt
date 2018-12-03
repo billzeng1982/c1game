@@ -1,0 +1,122 @@
+--[[
+名称：莽撞易怒
+类型：被动技能
+描述：加物攻8%
+--]]
+--5000 + 武将ID*10 + 0~9 : ID 命名规则
+--这个ID要和脚本ID保持一致
+local ThisScriptId = 5683; 
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+-- 自己加减属性 
+	-- 加物攻
+	local strAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF);	-- 取原始值
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, strAtk * 0.08); 		-- 改变属性
+	
+	-- 加法攻
+	--local witAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF);
+	--LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT, witAtk * 0.2);
+	
+	-- 加物防
+	--local strDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF);
+	--LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, strDef * 0.06);
+	
+	-- 加法防
+	--local witDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF);
+	--LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT,witDef * 0.2);
+	
+    -- 加速减速等
+	--LuaDataAgt:ChgSpeedByRatio(1.04);   -- 加速4%
+	--LuaDataAgt:ChgSpeedByRatio(0.9);   -- 减速10%
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt)
+	--findTarget和takeEffectc 才会生效
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	LuaDataAgt:ClearTarget();
+    local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.NONE); --找己方 TARGET_GROUP.SELF
+																 --找敌方 TARGET_GROUP.ENEMY
+																 --找自己 TARGET_GROUP.NONE
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	-- 改变箭塔和栅栏 血量
+	--LuaDataAgt:ChgTowerHp(TARGET_GROUP.ENEMY, VALUE_TYPE.RUNTIME_CONF, -5);			--敌方箭塔 血量上限减5；
+	--LuaDataAgt:ChgBarrierHp(TARGET_GROUP.SELF, VALUE_TYPE.RUNTIME_CONF, 5);			--己方栅栏 血量上限加5；
+	
+	if IsOnServer then
+		LuaDataAgt:SetSkillEnable(false);
+		return;
+	end
+	
+	-- 加士气 只能在这里加
+	--LuaDataAgt:ChgMorale(0.5);
+	
+	-- 复活时间改变
+	--LuaDataAgt:ChgRevivalTime(VALUE_TYPE.RUNTIME_CONF, 5);  -- 延长5秒复活
+	--LuaDataAgt:ChgRevivalTime(VALUE_TYPE.RUNTIME_CONF, -5); -- 减少5秒复活
+	
+	--攻城CD改变
+	--LuaDataAgt:ChgAtkCityCD(VALUE_TYPE.RUNTIME_CONF, 5);		-- 增加攻城5sCD
+	--LuaDataAgt:ChgAtkCityCD(VALUE_TYPE.RUNTIME_CONF, -5);	    -- 减少攻城5sCD
+	
+	--改变弓兵射程
+	--LuaDataAgt:ChgArcherRadius(VALUE_TYPE.RUNTIME_CONF, 0.1); --提升弓兵射程10%
+	
+--拷贝代码段	
+--全军加属性 全军加的是一样的 
+    local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.SELF);	--取己方TARGET_GROUP.SELF
+																	--取敌方 TARGET_GROUP.ENEMY
+	--for i = 0,targetList.Count-1 do
+		-- 通过添加Buff进行属性同步
+		--targetList:get_Item(i):AddBuff(ThisScriptId, LuaDataAgt, nil);
+	--end
+	
+	--for i = 0,targetList.Count-1 do
+		--targetList:get_Item(i):ChgAtkCityCD(VALUE_TYPE.RUNTIME_CONF, 5);				--增加攻城CD5s
+	--end
+	
+--全军加属性 自己和其它部队不一样(刘备等)
+    local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.SELF);	--取己方TARGET_GROUP.SELF
+																	--取敌方 TARGET_GROUP.ENEMY
+	--for i = 0,targetList.Count-1 do
+		--local bIsSelf = LuaDataAgt:Equal(targetList:get_Item(i));
+		
+		--if bIsSelf then
+			--targetList:get_Item(i):AddBuff(ThisScriptId + 1, LuaDataAgt, nil);
+		--else
+			--targetList:get_Item(i):AddBuff(ThisScriptId, LuaDataAgt, nil);
+		--end	
+	--end
+	
+	-- 被动技能一场比赛只生效一次
+	LuaDataAgt:SetSkillEnable(false);
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	
+end
+
+--技能过滤
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	
+end
+
+--这个ID要和脚本ID保持一致
+PassiveSkill_5683 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	
+	func_doFormula = doFormula;
+	func_doFilter = doFilter;
+}

@@ -1,0 +1,75 @@
+--[[
+名称:凌统1
+类型:被动技能
+描述:凌统每次突击成功后增加自身物防（可叠加）<color=#53de1c>30%</color>
+--]]
+
+local ThisScriptId = 6770; 
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local Source = LuaDataAgt:GetBuffSource();
+	
+	--属性加减
+	local buffLevel = LuaDataAgt:GetBuffLevel();	--实现叠加机制
+	if buffLevel >= 10 then 
+		buffLevel = 10;
+	end
+	
+	local Ratio = LuaDataAgt:GetPassiveSkillBaseValue(ThisScriptId, 1) / 100;
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * Ratio * buffLevel;
+	local iDef = LuaDataAgt:GetStrDef(VALUE_TYPE.CURRENT);
+	print("iDef1=="..iDef);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, AddStrDef);
+	iDef = LuaDataAgt:GetStrDef(VALUE_TYPE.CURRENT);
+	print("iDef2=="..iDef);
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+		
+		local TarPos = LuaDataAgt:GetCurPos();
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_WuFangShangSheng", LuaDataAgt, TarPos, TarPos, 1, true); -- 延迟1播该特效
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local Source = LuaDataAgt:GetBuffSource();
+	
+	--属性加减
+	local buffLevel = LuaDataAgt:GetBuffLevel();	--实现叠加机制
+	if buffLevel >= 10 then 
+		buffLevel = 10;
+	end
+	
+	local Ratio = LuaDataAgt:GetPassiveSkillBaseValue(ThisScriptId, 1) / 100;
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * Ratio * buffLevel;
+	
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -AddStrDef);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+end
+
+Buff_6770 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

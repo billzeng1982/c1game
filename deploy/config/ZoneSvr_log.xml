@@ -1,0 +1,26 @@
+<TLOGConf>
+	<PriorityHigh>NULL</PriorityHigh>
+	<PriorityLow>INFO</PriorityLow>
+	<Count>1</Count>
+	<CategoryList>
+		<Name>ZoneSvr</Name>
+		<PriorityHigh>NULL</PriorityHigh>
+		<PriorityLow>INFO</PriorityLow>
+		<Format></Format>
+		<ForwardCat>test2</ForwardCat>
+		<Device>
+			<Type>NET</Type>
+				<Device>
+					<Net>
+					    <Url>udp://127.0.0.1:6666</Url>
+						<Sendbuff>65535</Sendbuff>
+						<RecvBuff>10240</RecvBuff>
+						<AutoReconnect>1</AutoReconnect>
+						<MaxRetry>20</MaxRetry>
+						<ConnTimeout>1000</ConnTimeout>
+						<SendTimeout>1000</SendTimeout>
+					</Net>
+				</Device>
+		</Device>
+	</CategoryList>
+</TLOGConf>

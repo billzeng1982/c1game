@@ -1,0 +1,72 @@
+--[[
+名称：火神
+类型：被动技能
+描述：被祝融射击过的敌军，会持续受到火焰伤害，并减少受到的治疗效果50%，持续8秒
+--]]
+local ThisScriptId = 6674;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 8);
+
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+	
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 0, source, VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+end
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+	
+	local StrAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+	local StrDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+	
+	iRet = math.max((StrAtk - StrDef), StrAtk / 5);
+	return -iRet;
+end
+
+--Skill过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	--减少治疗
+	if iFilterType == FILTER_TYPE.HP then
+	    local iHp = FilterValue.m_fFoo1;
+		if iHp > 0 then
+			FilterValue.m_fFoo1 = iHp * 0.5;
+		end
+	end
+	
+	return FilterValue;
+end
+
+Buff_6674 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFormula = doFormula;
+	func_doFilter = doFilter;
+}

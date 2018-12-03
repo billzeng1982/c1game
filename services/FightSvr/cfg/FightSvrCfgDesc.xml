@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="gb2312" standalone="yes" ?>
+<metalib tagsetversion="1" name="FightSvrCfg" version="1" >
+	<struct name="FightSvrCfg" version="1" desc="主配置结构">
+		<entry name="ProcIDStr" 			type="string" 	size="20" />
+		<entry name="ProcID"				type="int" 		defaultvalue="0"/>
+		<entry name="BusGCIMKey" 			type="int" />
+
+		<entry name="ConnIDStr" 			type="string"	size="20" />
+		<entry name="ConnID"				type="int"		defaultvalue="0"/>
+
+		<entry name="ClusterGateIDStr" 	type="string"	size="20" />
+		<entry name="ClusterGateID"		type="int"		defaultvalue="0"/>
+
+		<entry name="ReportInterval"		type="uint32"	defaultvalue="5" desc="上报状态到ClusterGate间隔 秒" />
+		<entry name="MaxFightControler"	type="int"      desc="最大战场控制者" />
+		<entry name="MaxDungeonNum"		type="int"		desc="最大副本数" />
+
+		<!-- Test Conn Ip & Port -->
+		<entry name="ConnSvrIpStr" 		type="string"	size="20" />
+		<entry name="ConnSvrIp" 			type="int" />
+		<entry name="ConnSvrPort" 			type="uint16"	desc="" />
+	</struct>
+</metalib>
+

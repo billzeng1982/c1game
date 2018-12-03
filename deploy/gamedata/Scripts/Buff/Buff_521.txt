@@ -1,0 +1,47 @@
+--[[
+名称：归心似箭
+类型：武将技能秘籍BUFF
+描述：BUFF结束后减速，秘籍2
+--]]
+local ThisScriptId = 521;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+    local source = LuaDataAgt:GetBuffSource();
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 5);
+	
+	local level = source:GetActiveSkillCheatsValue(2);
+    LuaDataAgt:ChgSpeedByRatio((1-level/100));
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+
+	local level = source:GetActiveSkillCheatsValue(2);
+    LuaDataAgt:ChgSpeedByRatio(-(1-level/100));
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_521 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

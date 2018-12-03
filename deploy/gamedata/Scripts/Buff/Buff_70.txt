@@ -1,0 +1,64 @@
+--[[
+名称：一骑当千
+类型：主动技能
+描述：减攻
+--]]
+local ThisScriptId = 70;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--buff时间设置
+	local itime = 6;
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+
+	--属性加减
+	local AddAtk = source:GetActiveSkillBaseValue(2);
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -AddAtk);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+		
+		local TarPos =  LuaDataAgt:GetCurPos();
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_WuGongXiaJiang", LuaDataAgt, TarPos, TarPos, 0.5, true);
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+
+	--属性加减
+	local AddAtk = source:GetActiveSkillBaseValue(2);
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, AddAtk);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_70 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+}

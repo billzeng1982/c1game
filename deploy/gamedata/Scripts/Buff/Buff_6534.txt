@@ -1,0 +1,59 @@
+--[[
+名称：止啼
+类型：星级被动Buff
+描述：被张辽攻击的敌军，降低物攻物防25%，持续5秒
+--]]
+local ThisScriptId = 6534;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--测试
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 5);
+	
+	--属性加减
+	local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * 0.25;
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * 0.25;
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -AddStrAtk);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -AddStrDef);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * 0.25;
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * 0.25;
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, AddStrAtk);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, AddStrDef);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_6534 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

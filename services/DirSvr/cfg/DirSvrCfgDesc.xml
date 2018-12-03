@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="GBK" standalone="yes" ?>
+<metalib tagsetversion="1" name="DirSvrCfg" version="1" >
+	<struct name="DirSvrCfg" version="1" desc="主配置结构">
+		<entry name="ProcIDStr" 		type="string" 	size="20" />
+		<entry name="ProcID"			type="int" 		defaultvalue="0"/>
+		<entry name="ClusterGateIDStr" 	type="string" 	size="20" />
+		<entry name="ClusterGateID"		type="int" 		defaultvalue="0"/>
+		<entry name="BusGCIMKey" 		type="int" />
+		<entry name="HttpSvrPort" 		type="int" />
+		<entry name="UdpSvrPort" 		type="uint16" />
+		<entry name="GetSvrListUri" 	type="string" 	size="20" />
+	</struct>
+</metalib>

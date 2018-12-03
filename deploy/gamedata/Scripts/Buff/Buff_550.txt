@@ -1,0 +1,67 @@
+--[[
+名称：炙炎火舟
+类型：武将技能BUFF
+描述：每秒减血
+--]]
+local ThisScriptId = 550;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	local itime = source:GetActiveSkillAdditionValue(3);
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+	
+	-- 设置Buff公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+
+	LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 0, source, VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 224);
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+
+end
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+	
+	local BaseDamage = rSource:GetActiveSkillBaseValue(4);
+	local DamageRatio = rSource:GetActiveSkillRateValue(4);
+	local StrAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+	local StrDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+	
+	iRet = BaseDamage + (StrAtk - StrDef) * DamageRatio;
+	iRet = math.max(iRet, 10);
+	
+	return -iRet;
+end
+
+Buff_550 = {
+func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFormula = doFormula;
+}

@@ -1,0 +1,73 @@
+--[[
+名称：许褚_裸衣大战_加攻
+类型：武将技能Buff
+描述：物攻加40
+--]]
+local ThisScriptId = 539;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--buff时间设置
+	local itime = LuaDataAgt:GetActiveSkillAdditionValue(2);
+	if LuaDataAgt:IsHaveActiveSkillCheats(1) then     --秘籍1：增加时长
+	    itime = itime * 1.1;
+	end
+	
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+	--属性加减
+	local StrAtkChg = LuaDataAgt:GetActiveSkillBaseValue(1);
+	local StrDefChg = LuaDataAgt:GetActiveSkillBaseValue(4);
+	local WitDefChg = LuaDataAgt:GetActiveSkillBaseValue(5);
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, StrAtkChg);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, StrDefChg);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, WitDefChg);
+	if LuaDataAgt:IsHaveActiveSkillCheats(2) then     --秘籍2：加法防
+		LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, WitDefChg * 0.5);
+	end
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减
+	local StrAtkChg = LuaDataAgt:GetActiveSkillBaseValue(1);
+	local StrDefChg = LuaDataAgt:GetActiveSkillBaseValue(4);
+	local WitDefChg = LuaDataAgt:GetActiveSkillBaseValue(5);
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -StrAtkChg);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -StrDefChg);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, -WitDefChg);
+	if LuaDataAgt:IsHaveActiveSkillCheats(2) then     --秘籍2：加法防
+	    LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, -WitDefChg * 0.5);
+	end
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_539 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

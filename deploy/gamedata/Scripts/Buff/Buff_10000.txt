@@ -1,0 +1,67 @@
+--[[
+名称：家园卫士
+类型：
+描述：出城加伤害
+--]]
+local ThisScriptId = 10000;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--设置Buff过滤位置信息
+	
+	--buff时间设置
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 3);
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	local iHp = FilterValue.m_fFoo1;
+	if iFilterType == FILTER_TYPE.HP and IsSource then
+	    if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_NORMAL or 
+			FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_SHOOT  or 
+			FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_SPEAR or
+			FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_FACE then
+			iHp = iHp * 1;
+			if not IsOnServer then
+				LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt)
+			end 
+		
+		end
+	end
+	FilterValue.m_fFoo1 = iHp;
+	return FilterValue;
+end
+
+Buff_10000 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

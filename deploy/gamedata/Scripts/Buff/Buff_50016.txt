@@ -1,0 +1,99 @@
+--[[
+名称：护盾buff
+类型：地载阵后援Buff
+描述：刀盾兵作为后援部队登场时给队友加护盾
+--]]
+local ThisScriptId = 50016;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local Source = LuaDataAgt:GetBuffSource();
+	
+    --设置时间
+	--local itime = 10;
+	--LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+
+	local Ratio = LuaDataAgt:GetLuaDataAgtShareValue();
+	--local Ratio = 0.05;
+	local Shield = LuaDataAgt:GetHp(VALUE_TYPE.RUNTIME_CONF) * Ratio;
+	
+	LuaDataAgt:SetShareValue(0, Shield);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+		
+		-- 附加血量表现
+		LuaDataAgt:SetAdditionHp(ThisScriptId, Shield);
+	end
+	
+	-- -3 优先级 要比铁索连环的低
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, -3);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	LuaDataAgt:SetShareValue(0, 0);
+	
+	if (not IsOnServer) then
+		LuaDataAgt:RefreshFightNum();
+		
+		-- 附加血量表现
+		LuaDataAgt:SetAdditionHp(ThisScriptId, 0);
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	if not IsSource and iFilterType == FILTER_TYPE.HP then
+		local iHp = FilterValue.m_fFoo1;
+		if iHp < 0 then
+			local shareValue = LuaDataAgt:GetShareValue(0);
+			if shareValue > 0 then
+				--300是护盾
+				local realHp = iHp + shareValue;
+				LuaDataAgt:SetShareValue(0, realHp);
+				if (not IsOnServer) then
+					-- 附加血量表现
+					LuaDataAgt:SetAdditionHp(ThisScriptId, realHp);
+				end
+				if realHp > 0 then
+					FilterValue.m_fFoo1 = 0;
+				else
+					FilterValue.m_fFoo1 = realHp;
+					if not IsOnServer then
+						LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+					end
+				end
+			end
+		end
+	end
+	
+	return  FilterValue;
+end
+
+Buff_50016 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

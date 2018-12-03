@@ -1,0 +1,82 @@
+--[[
+名称：徐晃被动4	
+类型：被动buff
+描述：我方降低受到骑兵的伤害
+--]]
+local ThisScriptId = 6792;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 999);
+	
+	-- 添加血量过滤处理
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.HP then
+		local iHp = FilterValue.m_fFoo1;
+		if iHp < 0 and not IsSource then  --判断伤害是不是自己造成的
+			--判断是否为骑兵造成的伤害
+			local Source = FilterValue:GetSource();
+			local ObjectType = Source:GetGoType();
+			local ArmyType = Source:GetArmyType();
+	
+			if ObjectType == FIGHTOBJ_TYPE.FIGHTOBJ_TROOP and ArmyType == ARMY_TYPE.ARMY_CAVALRY then
+				local rSource = LuaDataAgt:GetBuffSource();
+				local Ratio = rSource:GetPassiveSkillBaseValue(ThisScriptId, 1) / 100;
+				--保护
+				if Ratio > 1 then
+					Ratio = 1
+				end
+				
+				FilterValue.m_fFoo1 = iHp * (1 - Ratio);  --对伤害进行处理
+			end
+		end
+	end
+	
+	return FilterValue;
+end
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = -iRet * 1;
+	return iRet;
+end
+
+Buff_6792 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+	func_doFormula = doFormula;
+}

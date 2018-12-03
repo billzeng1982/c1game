@@ -1,0 +1,147 @@
+--[[
+名称：伏兵
+类型：固有被动Buff
+描述：开场隐身，对第一个碰到的敌人造成大量伤害
+--]]
+local ThisScriptId = 5001;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	
+	-- 伏兵减速
+	LuaDataAgt:ChgSpeedByRatio(0.6);
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 999);
+	
+	--伏兵隐身
+	if not IsOnServer then
+		LuaDataAgt:SetTroopAmbush(true);
+	end
+	
+	--伏兵监听事件
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+	LuaDataAgt:SetFilter(FILTER_TYPE.COND, TARGET_GROUP.NONE, 0);
+	LuaDataAgt:SetFilter(FILTER_TYPE.TRIG, TARGET_GROUP.NONE, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	if not LuaDataAgt:CanBeOperate() then
+		-- 在城内，重置LifeTime，也就是不计时
+		LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.CURRENT, 999);
+	end
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	-- 伏兵减速回退
+	LuaDataAgt:ChgSpeedByRatio(-0.6);
+	
+	--伏兵现形
+	if not IsOnServer then
+		LuaDataAgt:SetTroopAmbush(false);
+		
+		local armyPhase = LuaDataAgt:GetArmyPhase();
+		local isDead = LuaDataAgt:IsDead();
+		local isRetreat = LuaDataAgt:IsRetreat();
+		-- 伏兵结束后加速(品阶)
+		if armyPhase >= 2 and not isDead and not isRetreat then
+			LuaDataAgt:AddBuff(9004, LuaDataAgt, nil);
+		end
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local rSource = FilterValue:GetSource();
+	local IsSource = rFilterOwner:Equal(rSource);
+	
+	
+	if iFilterType == FILTER_TYPE.HP and not IsSource then
+		-- 受伤现形
+		if not IsOnServer then
+			-- 客户端处理方式
+			local iHp = FilterValue.m_fFoo1;
+			if iHp < 0 then
+				if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_AMBUSH then
+					-- 伏兵打伏兵，我方伏兵也得生效
+					LuaDataAgt:DoTroopAmbush(rSource);
+				end
+				LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+			end
+		else
+			-- 服务器处理方式
+			
+		end
+	end
+	
+	if iFilterType == FILTER_TYPE.COND then
+		-- 不能单挑，被单挑
+		if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_SOLO then
+			FilterValue.m_fFoo1 = 0;
+		end
+		
+		if IsSource then
+			-- 攻击城墙和障碍时现形
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_CITY or FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_OBSTACLE then
+				LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+			end
+			
+			--普通攻击触发伏兵暂停流程，而不进行普通攻击
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_NORMAL then
+				LuaDataAgt:DoTroopAmbush();
+				FilterValue.m_fFoo1 = 0;
+			end
+			
+			-- 不能进行兵种技攻击
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ARMYSKILL then
+				FilterValue.m_fFoo1 = 0;
+			end
+		else
+			-- 不能被普通攻击、兵种技攻击
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_NORMAL or FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_ARMYSKILL then
+				FilterValue.m_fFoo1 = 0;
+			end
+			
+			-- 不能被索敌攻击
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_LOCK then
+				FilterValue.m_fFoo1 = 0;
+			end
+		end
+	end
+
+
+	
+	if iFilterType == FILTER_TYPE.TRIG and IsSource then
+		-- 放技能现形,加上伤害加倍buff
+		if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_TRIG_GENERALSKILL then
+			LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+			LuaDataAgt:AddBuff(602, LuaDataAgt, nil);
+		end
+	end
+	
+	return FilterValue;
+end
+
+Buff_5001 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

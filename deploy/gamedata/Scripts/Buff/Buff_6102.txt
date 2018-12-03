@@ -1,0 +1,60 @@
+--[[
+名称：咄咄怪事
+类型：被动技能
+描述：于吉减少友军受到的伤害 友军势力数为4时 效果翻倍   翻倍buffid13010
+--]]
+local ThisScriptId = 6102;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local rSource = LuaDataAgt:GetBuffSource();
+
+	--属性加减
+	local PassiveSkillRatio = rSource:GetPassiveSkillBaseValue(ThisScriptId,1) / 100;
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_BLOCK_VALUE, PassiveSkillRatio);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+		
+		local TarPos = LuaDataAgt:GetCurPos();
+		--LuaDataAgt:Play2DFXFollowTroopInfo("Prefabs/BasicEffect/UI_CharEff_JianShang", 3 , TarPos);
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_JianShang", LuaDataAgt, TarPos, TarPos, 3, true);
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local rSource = LuaDataAgt:GetBuffSource();
+
+	--属性加减
+	local PassiveSkillRatio = rSource:GetPassiveSkillBaseValue(ThisScriptId,1) / 100;
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_BLOCK_VALUE, -PassiveSkillRatio);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_6102 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

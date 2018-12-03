@@ -1,0 +1,52 @@
+--[[
+名称：黄盖被动1
+类型：被动buff
+描述：增加攻击，生命值低于50%增加更多的攻击
+--]]
+local ThisScriptId = 6622;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	local Chgvalue = LuaDataAgt:GetPassiveSkillBaseValue(ThisScriptId, 1);
+   
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, Chgvalue * 0.3);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local Chgvalue = LuaDataAgt:GetPassiveSkillBaseValue(ThisScriptId, 1);
+   
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -Chgvalue * 0.3);
+   
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+end
+
+Buff_6622 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

@@ -1,0 +1,92 @@
+--[[
+名称：裸衣大战
+类型：主动技能
+描述：许褚觉醒击杀buff 生命值回复 永久提升物攻
+--]]
+local ThisScriptId = 559;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, -5);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	local rSource = LuaDataAgt:GetBuffSource();
+	local iHp = FilterValue.m_fFoo1;
+
+	if iFilterType == FILTER_TYPE.HP then
+		local iHp = FilterValue.m_fFoo1;
+		if iHp < 0 and not IsSource and not IsOnServer then
+			if (FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_SHOOT or
+				FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_SPEAR or
+				FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_NORMAL or
+				FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_RUSH or
+				FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_FACE or
+				FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_AMBUSH or
+				FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_GENERALSKILL) then
+				
+				local curHp = LuaDataAgt:GetHp(VALUE_TYPE.CURRENT);
+				
+				if (curHp + iHp) <= 0 then
+					local addhp = rSource:GetHp(VALUE_TYPE.RUNTIME_CONF);
+					local huifuratio = rSource:GetActiveSkillBaseValue(6);
+					addhp = addhp * huifuratio;
+					
+					--local curpos = rSource:GetCurPos();
+					--rSource:PlayFX("Prefabs/BasicEffect/3D_CharEff_HuiFu", rSource, curpos, curpos, 0.5, true); 
+					
+					rSource:ChgHp(VALUE_TYPE.CURRENT, addhp, rSource,VALUE_CHG_TYPE.CHG_HP_COMM, ThisScriptId, 221);
+					rSource:AddBuff(570, rSource, nil);
+					--[[
+					local j = math.random(1,100);
+					if j < 51 then
+						rSource:ChgMorale(3);
+						local TarPos = rSource:GetCurPos();
+						--rSource:Play2DFXFollowTroopInfo("Prefabs/BasicEffect/UI_CharEff_ShiQiHuiFu", 1.5, TarPos);
+						rSource:PlayFX("Prefabs/BasicEffect/3D_CharEff_ShiQiHuiFu", rSource, TarPos, TarPos, 1.5, true);
+					end
+					]]
+				end
+			end
+		end
+	end
+
+	return FilterValue;
+end
+
+Buff_559 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFilter = doFilter;
+}

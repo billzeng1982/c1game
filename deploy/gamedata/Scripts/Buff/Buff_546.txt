@@ -1,0 +1,47 @@
+--[[
+名称：孟获复活归位
+类型：
+描述：孟获复活归位
+--]]
+local ThisScriptId = 546;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	LuaDataAgt:SetCurPos(LuaDataAgt:GetDeadPos(), true);
+	
+	-- 播放特效（带延迟）
+	local currPos = LuaDataAgt:GetCurPos();
+	LuaDataAgt:PlayFX("Prefabs/BuffEffect/Master_Fenyong", LuaDataAgt, currPos, currPos, 0.1, false);
+	
+	-- 生效一次，删除本Buff
+	LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+end
+
+Buff_546 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

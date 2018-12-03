@@ -1,0 +1,82 @@
+--[[
+名称：酒池肉林BUFF
+类型：武将技能秘籍BUFF
+描述：自身减伤buff
+--]]
+local ThisScriptId = 10121;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+   
+	--buff时间设置
+	local itime = source:GetActiveSkillAdditionValue(3);				--BUFF时间
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);		--设置BUFF时间
+	
+	--属性加减
+	local addatk = source:GetActiveSkillAdditionValue(1);			--BUFF减少的攻击力
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -addatk);					--设置减少的攻击力
+	
+	--设置过滤器
+	LuaDataAgt:SetFilter(FILTER_TYPE.COND, TARGET_GROUP.NONE, 0);
+	LuaDataAgt:SetFilter(FILTER_TYPE.POS, TARGET_GROUP.NONE, -2);
+	-- 添加HP Filter，过滤对敌方的最终伤害（执行优先级靠后，值越小越靠后）
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, -3);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--属性加减
+	local addatk = source:GetActiveSkillAdditionValue(1);			--BUFF减少的攻击力
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, addatk);					--设置减少的攻击力
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	
+	if iFilterType == FILTER_TYPE.HP then
+		local iHp = FilterValue.m_fFoo1;
+		if iHp < 0 and not IsSource then
+			local curHp = rFilterOwner:GetHp(VALUE_TYPE.CURRENT);
+			if curHp < -iHp	then
+				--死亡了的话给董卓加血
+				local buffSource = rFilterOwner:GetBuffSource();
+				buffSource:ChgHp(VALUE_TYPE.CURRENT, 0, buffSource, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+			end
+		end	
+	end
+end
+
+
+Buff_10121 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

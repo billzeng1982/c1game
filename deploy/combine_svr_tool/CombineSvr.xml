@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CombineSvrCfg>
+	<BeCombinedSidList>6</BeCombinedSidList>
+	<MysqlPingFreq>12000</MysqlPingFreq>
+	<MysqlPort>3306</MysqlPort>
+	<MysqlUser>root</MysqlUser>
+	<MysqlDBName>c1game</MysqlDBName>
+	<MysqlDBAddr>127.0.0.1</MysqlDBAddr>
+	<MysqlPassword>123456</MysqlPassword>
+</CombineSvrCfg>

@@ -1,0 +1,79 @@
+--[[
+名称：明察之阵
+类型：军师技Buff
+描述：较短时间内，我方免疫控制，增加40%法防
+--]]
+local ThisScriptId = 1040;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local Time = LuaDataAgt:GetMSAddValue4Buff();
+	
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, Time);
+	
+	LuaDataAgt:SetFilter(FILTER_TYPE.TRIG, TARGET_GROUP.NONE, 0);
+	
+	LuaDataAgt:SetShareValue(3,0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local iWitDef = LuaDataAgt:GetShareValue(3);
+	
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT,-iWitDef);
+	
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	local iWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * 0.4;
+	LuaDataAgt:SetShareValue(3,iWitDef);
+	
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT,iWitDef);
+	
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.TRIG then
+		--受到敌人的技能控制
+		if not IsOnServer and not IsSource and FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_TRIG_BUFF_ADD_END then
+			local iBuffType = BUFF_TYPE.IntToEnum(FilterValue.m_fFoo2);
+			if (iBuffType == BUFF_TYPE.BUFF_TYPE_SPEED_LOSS or
+				iBuffType == BUFF_TYPE.BUFF_TYPE_FAINT or 
+				iBuffType == BUFF_TYPE.BUFF_TYPE_RESTRAIN or
+				iBuffType == BUFF_TYPE.BUFF_TYPE_SCOFF
+				) then
+				FilterValue.m_fFoo1 = 0;
+			end
+		end
+	end
+	
+	
+	return FilterValue;
+end
+
+
+Buff_1040 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFilter = doFilter;
+}

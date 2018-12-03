@@ -1,0 +1,58 @@
+--[[
+名称：干戚之舞
+类型：武将技能Buff
+描述：加暴击
+--]]
+local ThisScriptId = 2040;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--buff时间设置
+	--LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 10);
+	--属性加成
+	local CriticalChance = 1000;
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL, CriticalChance);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	local source = LuaDataAgt:GetBuffSource();
+
+	local CriticalChance = 1000;
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL, -CriticalChance);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+
+Buff_2040 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+}

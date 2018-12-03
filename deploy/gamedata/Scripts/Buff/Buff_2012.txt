@@ -1,0 +1,63 @@
+--[[
+名称：天水麒麟
+类型：觉醒主动技能buff
+描述：姜维射击伤害增加30%
+--]]
+local ThisScriptId = 2012;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 3);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+
+	if iFilterType == FILTER_TYPE.HP and FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_SHOOT then
+		local iHp = FilterValue.m_fFoo1;
+		if iHp < 0 and IsSource then
+			FilterValue.m_fFoo1 = iHp * 1.3;
+
+			if not IsOnServer then
+				local TarPos = LuaDataAgt:GetCurPos();
+				--LuaDataAgt:Play2DFXFollowTroopInfo("Prefabs/BasicEffect/CharEff_BaoJi", 0 , TarPos);
+				LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_BaoJi", LuaDataAgt, TarPos, TarPos, 0, true);
+			end
+		end
+	end
+
+	return FilterValue;
+end
+
+Buff_2012 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFilter = doFilter;
+}

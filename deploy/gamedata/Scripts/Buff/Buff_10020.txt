@@ -1,0 +1,54 @@
+ --[[
+名称：偷盗名驹
+类型：武将技能Buff
+描述：敌人减速
+
+--]]
+local ThisScriptId = 10020;
+ 
+ --Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--buff时间设置
+	local itime = source:GetActiveSkillAdditionValue(3);
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+	
+	--属性加减
+	local speed = source:GetActiveSkillAdditionValue(1);
+	LuaDataAgt:ChgSpeedByRatio(1 - speed / 100);
+end
+
+--Buff驱散条件判断
+ local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+    local source = LuaDataAgt:GetBuffSource();
+	
+	--属性加减
+	local speed = source:GetActiveSkillAdditionValue(1);
+	LuaDataAgt:ChgSpeedByRatio(-1 + speed / 100);
+end
+	
+ --Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end	
+
+ -- Buff生效
+ local function takeEffect(LuaDataAgt)
+	 
+ end 
+
+
+Buff_10020 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

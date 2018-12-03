@@ -1,0 +1,57 @@
+--[[
+名称:孙权1
+类型:被动技能buff
+描述:孙权每次突击成功后吸取对方物攻（自身物攻提升buffid6810）<color=#53de1c>30%</color>
+--]]
+local ThisScriptId = 13002;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local rSource = LuaDataAgt:GetBuffSource();
+	
+	local AddStrAtk = rSource:GetPassiveSkillBaseValue(6810, 1);
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -AddStrAtk);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+
+		local TarPos = LuaDataAgt:GetCurPos();
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_WuGongXiaJiang", LuaDataAgt, TarPos, TarPos, 0, true); -- 延迟0播该特效
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local rSource = LuaDataAgt:GetBuffSource();
+	
+	local AddStrAtk = rSource:GetPassiveSkillBaseValue(6810, 1);
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,AddStrAtk);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_13002 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

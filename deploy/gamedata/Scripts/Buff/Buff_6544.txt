@@ -1,0 +1,52 @@
+--[[
+名称：啖睛	
+类型：星级被动Buff
+描述：血量低于40%，加物攻50%
+--]]
+local ThisScriptId = 6544;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * 0.50;
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, AddStrAtk);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减
+	local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * 0.50;
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -AddStrAtk);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_6544 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

@@ -1,0 +1,138 @@
+--[[
+名称：太阴炼魂跳舞
+类型：武将技能Buff
+描述：每X秒对敌军造成伤害，并减速15%
+--]]
+local ThisScriptId = 10;
+local DancePowerUpBuffId = 616;
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--设置过滤器
+	LuaDataAgt:SetFilter(FILTER_TYPE.COND, TARGET_GROUP.NONE, 0);
+	LuaDataAgt:SetFilter(FILTER_TYPE.POS, TARGET_GROUP.NONE, -2);
+	LuaDataAgt:SetFilter(FILTER_TYPE.TRIG, TARGET_GROUP.NONE, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	LuaDataAgt:DelBuff(DancePowerUpBuffId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+	
+    --跳舞能量值设置
+	LuaDataAgt:SetActiveSkillShareValue(0, 0);
+	
+	LuaDataAgt:SetDancePower(0); 
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	--跳舞能量值设置
+	local dancePower = LuaDataAgt:GetActiveSkillShareValue(0) + 1;
+	LuaDataAgt:SetActiveSkillShareValue(0, dancePower);
+	
+	LuaDataAgt:SetDancePower(dancePower);
+	
+		--附加效果
+	if dancePower == 3 then
+		LuaDataAgt:AddBuff(DancePowerUpBuffId, LuaDataAgt, nil);
+		
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_JiNengQiangHua", LuaDataAgt, Vector3.zero, Vector3.zero, 0, true);
+	end
+	
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.ENEMY);
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	
+	if targetList.Count > 0 then
+		math.randomseed(tostring(os.time()):reverse():sub(1, 6));
+		local j = math.random(0, targetList.Count-1);
+		
+		local target = targetList:get_Item(j);
+		target:AddBuff(549, LuaDataAgt, nil); --打伤害
+		target:AddBuff(548, LuaDataAgt, nil); --减速
+		
+		--target:PlayFX("Prefabs/BasicEffect/3D_CharEff_YiShang", target, Vector3.zero, Vector3.zero, 0, true);
+	end
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.COND then
+		-- 不能单挑，被单挑
+		if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_SOLO then
+			FilterValue.m_fFoo1 = 0;
+		end
+		
+		if IsSource then
+			--不能使能兵种技能，不能释放武将技能
+			--跳舞可以射击和肉搏
+			--if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ARMYSKILL or 
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_GENERALSKILL then
+				FilterValue.m_fFoo1 = 0;
+				FilterValue.m_fFoo2 = 1;				
+			end
+			--不能攻城 
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_CITY or FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_OBSTACLE then
+				FilterValue.m_fFoo1 = 0;
+			end
+			
+			--[[
+			-- 不能进行普通攻击
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_NORMAL then
+				FilterValue.m_fFoo1 = 0;
+			end
+			--]]
+		end
+	end
+	
+	if iFilterType == FILTER_TYPE.POS then
+		--不能变位置
+		local currPos = LuaDataAgt:GetCurPos();
+		local destPos = Vector3(FilterValue.m_fFoo1, FilterValue.m_fFoo2, FilterValue.m_fFoo3);
+		local moveDstSqr = Vector3.SqrMagnitude(destPos - currPos);
+		if moveDstSqr > 20 then
+			--如果移动就取消掉这个跳舞
+			LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+		end
+		
+		--print("destPos--"..destPos.x.."--"..destPos.y.."--"..destPos.z);
+	end
+	
+	if iFilterType == FILTER_TYPE.TRIG then
+		--受到敌人的技能控制
+		if not IsOnServer and not IsSource and FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_TRIG_BUFF_ADD_END then
+			local iBuffType = BUFF_TYPE.IntToEnum(FilterValue.m_fFoo2);
+			if (iBuffType == BUFF_TYPE.BUFF_TYPE_FAINT or 
+				iBuffType == BUFF_TYPE.BUFF_TYPE_SILENT) then
+				LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+			end
+		end
+	end
+	
+	return FilterValue;
+end
+
+Buff_10 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+		
+	func_doFilter = doFilter;
+}

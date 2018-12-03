@@ -1,0 +1,61 @@
+--[[
+名称：回城回血
+类型：回城回血Buff
+描述：我想有个家
+--]]
+local ThisScriptId = 9999;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	
+	-- 设置Buff公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	--
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	local iHpCur = LuaDataAgt:GetHp(VALUE_TYPE.CURRENT);
+	local iHpMax = LuaDataAgt:GetHp(VALUE_TYPE.RUNTIME_CONF);
+	
+	if (iHpCur < iHpMax) then
+		LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+	end
+end
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+	
+	--取当前总HP值
+	local HP = LuaDataAgt:GetHp(VALUE_TYPE.RUNTIME_CONF);
+	iRet = HP * 0.1;
+	
+	return iRet;
+end
+
+Buff_9999 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFormula = doFormula;
+}

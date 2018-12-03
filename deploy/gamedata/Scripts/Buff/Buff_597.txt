@@ -1,0 +1,49 @@
+--[[
+名称：黄月英技能
+类型：主动技能buff
+描述：给所有友方套上火盾，给所有周围的人伤害
+--]]
+local ThisScriptId = 597;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+
+end
+
+--Buff驱散条件判断
+ local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+end
+	
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end	
+
+ -- Buff生效
+ local function takeEffect(LuaDataAgt)
+	LuaDataAgt:ClearTarget();
+	local targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20, 0);  --- 15 = （20 + 部队大小）/ 2
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	
+	local source = LuaDataAgt:GetBuffSource();
+	local dancePower = source:GetActiveSkillShareValue(0);
+	
+	for i=0, targetList.Count-1 do
+		targetList:get_Item(i):ChgHp(VALUE_TYPE.CURRENT, dancePower, source, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, 9, 0); --使用黄月英主动技里面的公式
+	end
+ end
+
+Buff_597 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

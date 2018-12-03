@@ -1,0 +1,97 @@
+--[[
+名称：喝断黄河
+类型：武将技能Buff
+描述：眩晕
+--]]
+local ThisScriptId = 14;
+ 
+ --Buff诞生处理
+local function runBorn(LuaDataAgt)
+	
+	--buff时间设置
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 2);
+
+	--设置过滤器
+	LuaDataAgt:SetFilter(FILTER_TYPE.COND, TARGET_GROUP.NONE, 0);
+	LuaDataAgt:SetFilter(FILTER_TYPE.POS, TARGET_GROUP.NONE, -2);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+		
+		local TarPos = LuaDataAgt:GetCurPos();
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_XuanYun", LuaDataAgt, TarPos, TarPos, 0, true); 
+	end
+end
+
+--Buff驱散条件判断
+ local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+
+	
+end
+	
+ --Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end	
+
+ -- Buff生效
+ local function takeEffect(LuaDataAgt)
+	 
+ end 
+
+ --Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.COND then
+		-- 不能单挑，被单挑
+		--if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_SOLO then
+			--FilterValue.m_fFoo1 = 0;
+		--end
+		
+		if IsSource then
+			-- 不能使能兵种技能，不能释放武将技能
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ARMYSKILL or FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_GENERALSKILL then
+				FilterValue.m_fFoo1 = 0;
+			end
+			
+			-- 不能攻城 
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_CITY or FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_OBSTACLE then
+				FilterValue.m_fFoo1 = 0;
+			end
+			
+			-- 不能进行普通攻击
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ATK_NORMAL then
+				FilterValue.m_fFoo1 = 0;
+			end
+		end
+	end
+	
+	if iFilterType == FILTER_TYPE.POS then
+		-- 不能变位置
+		local destPos = LuaDataAgt:GetCurPos();
+		FilterValue.m_fFoo1 = destPos.x;
+		FilterValue.m_fFoo2 = destPos.y;
+		FilterValue.m_fFoo3 = destPos.z;
+
+		-- print("destPos--"..destPos.x.."--"..destPos.y.."--"..destPos.z);
+	end
+	
+	return FilterValue;
+end
+
+Buff_14 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFilter = doFilter;
+}

@@ -1,0 +1,68 @@
+--[[
+名称：于吉减速减属性
+类型：主动技能
+描述：于吉减速减属性
+--]]
+local ThisScriptId = 548;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--buff时间设置
+	local itime = source:GetActiveSkillAdditionValue(3);		--BUFF时间参数
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);		--BUFF时间
+
+	-- 属性加减
+	local speed = source:GetActiveSkillAdditionValue(2);		--速度参数
+	LuaDataAgt:ChgSpeedByRatio( 1 - speed / 100);
+
+	local AddAtk = source:GetActiveSkillBaseValue(1);
+	--LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -AddAtk);
+	--LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, -AddAtk);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+   	-- 属性加减
+	local speed = source:GetActiveSkillAdditionValue(2);		--速度参数
+	LuaDataAgt:ChgSpeedByRatio( -1 + speed / 100);
+
+	local AddAtk = source:GetActiveSkillBaseValue(1);
+	--LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, AddAtk);
+	--LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, AddAtk);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_548 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

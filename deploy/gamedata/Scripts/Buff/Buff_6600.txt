@@ -1,0 +1,65 @@
+--[[
+名称:卓然矜持
+类型:被动技能
+描述:大乔每次成功施法后，有几率增加自身物防(此被动技能为空，技能效果写在同idbuff里，触发写在郭嘉主动技中id48)
+--]]
+local ThisScriptId = 6600; 
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--属性加减
+	local Ratio = source:GetPassiveSkillBaseValue(ThisScriptId, 1) / 100;
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * Ratio;
+	print("Ratio=="..Ratio);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, AddStrDef);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+		
+		local TarPos = LuaDataAgt:GetCurPos();
+		--LuaDataAgt:Play2DFXFollowTroopInfo("Prefabs/BasicEffect/UI_CharEff_WuFangShangSheng", 2 , TarPos);
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_WuFangShangSheng", LuaDataAgt, TarPos, TarPos, 0.5, true);
+	end
+	
+	print("BUFF_RUN ="..ThisScriptId);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--属性加减
+	local Ratio = source:GetPassiveSkillBaseValue(ThisScriptId, 1) / 100;
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * Ratio;
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -AddStrDef);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_6600 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

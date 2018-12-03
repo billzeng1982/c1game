@@ -1,0 +1,36 @@
+include ../../global.mk
+
+TARGET=../../deploy/services/ClusterAccountSvr/ClusterAccountSvr$(D)
+
+.PHONY: all clean
+
+# It is quit weired that all direcotry strings in $(SRCDIR_RAW) contain ':', so we need sed to get rid of them
+SRCDIR_RAW=$(shell ls -R | grep "/" | awk -F : '{print $1}')
+SRCDIR=$(shell echo $(SRCDIR_RAW) | sed 's/://g' )
+SOURCE=$(shell find ./ -name "*.cpp")
+
+OBJ=$(SOURCE:%.cpp=%.o)	
+
+TARGET_INC=-I./ $(addprefix -I,$(SRCDIR)) $(INC_SERV_LIB) $(INC_COMM) $(INC_MYSQL) $(INC_LIBEVENT)
+TARGET_LIB=$(LIB_SERV) $(LIB_COMM) $(LIB_TSF4G) $(LIB_MYSQL) $(LIB_LIBEVENT) -lpthread
+
+#LDENV = LD_RUN_PATH=$(shell /usr/bin/mysql_config --variable=pkglibdir)
+.PHONY: all clean rebuild
+
+all: $(TARGET)
+
+$(OBJ):%.o: %.cpp
+	@$(CXX) $(CXXFLAGS) -c $< -o $@ $(TARGET_INC) 
+	@echo compile $< ... $@
+	
+$(TARGET) : $(OBJ) ./cfg/ClusterAccountSvrCfgDesc.o
+	@mkdir -p `dirname $(TARGET)`
+	@$(LDENV) $(CXX) $(CXXFLAGS) -o $@ -z defs $^ $(TARGET_LIB)
+	@echo Build ...... $@
+
+clean:
+	@$(RM) $(OBJ)
+	@$(RM) $(TARGET)
+	@echo clean all *.o and $(TARGET) ...
+
+

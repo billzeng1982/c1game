@@ -1,0 +1,58 @@
+--[[
+名称：温酒
+类型：星级被动Buff
+描述：关羽输出伤害10秒后，输出的下一次伤害1.5倍
+--]]
+local ThisScriptId = 6184;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.HP then
+		local iHp = FilterValue.m_fFoo1;
+		if IsSource and iHp < 0 then
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_GENERALSKILL then
+				FilterValue.m_fFoo1 = iHp * 1.5;
+			else
+				FilterValue.m_fFoo1 = iHp * 1.5;
+			end
+		end
+	end
+	
+	return FilterValue;
+end
+
+Buff_6184 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+	func_doFilter = doFilter;
+}

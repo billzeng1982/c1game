@@ -1,0 +1,71 @@
+--[[
+名称：千里单骑
+类型：星级被动
+描述：当本方战场时只有关羽一人时，全属性+12
+--]]
+--5000 + 武将ID*10 + 0~9 : ID 命名规则
+--这个ID要和脚本ID保持一致
+local ThisScriptId = 5184; 
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt)
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	if IsOnServer then
+		LuaDataAgt:SetSkillEnable(false);
+		return;
+	end
+	
+	-- 团队过滤
+	LuaDataAgt:SetFilter(FILTER_TYPE.TRIG, TARGET_GROUP.SELF, 0);
+	
+	LuaDataAgt:SetSkillEnable(false);
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	
+end
+
+--技能过滤
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.TRIG then
+		if (FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_TRIG_TROOP_OUTCITY_DONE or 
+			FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_TRIG_TROOP_DEAD_DONE or 
+			FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_TRIG_TROOP_RETREAT_DONE) then
+			if LuaDataAgt:IsOnFieldOnlyMe() then
+				LuaDataAgt:AddBuff(ThisScriptId, LuaDataAgt, nil);
+			else
+				LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+			end
+		end
+	end
+	
+	return  FilterValue;
+end
+
+--这个ID要和脚本ID保持一致
+PassiveSkill_5184 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	
+	func_doFormula = doFormula;
+	func_doFilter = doFilter;
+}

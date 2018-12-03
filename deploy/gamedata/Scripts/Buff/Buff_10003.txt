@@ -1,0 +1,80 @@
+--[[
+名称：战场buff--加防御
+类型：战场buff
+描述：触碰以后加防御
+--]]
+local ThisScriptId = 10003;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 10);
+	LuaDataAgt:SetShareValue(0,0);
+	LuaDataAgt:SetShareValue(1,0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	LuaDataAgt:ClearTarget();
+	local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.SELF);
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	for i = 0 , targetList.Count-1 do
+		local target = targetList:get_Item(i);
+		local ChgValue_1 = LuaDataAgt:GetShareValue(0);
+		local ChgValue_2 = LuaDataAgt:GetShareValue(1);
+		target:ChgStrAtk(VALUE_TYPE.CURRENT,-ChgValue_1);
+		target:ChgWitAtk(VALUE_TYPE.CURRENT,-ChgValue_2);
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+	
+	LuaDataAgt:ClearTarget();
+	local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.SELF);
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	for i = 0 , targetList.Count-1 do
+		local target = targetList:get_Item(i);
+		local currPos = target:GetCurPos();
+		local StrDef = target:GetStrAtk(VALUE_TYPE.RUNTIME_CONF);
+		local WitDef = target:GetWitAtk(VALUE_TYPE.RUNTIME_CONF);
+		local ChgValue_1 = StrDef * 0.1;
+		local ChgValue_2 = WitDef * 0.1;
+		LuaDataAgt:SetShareValue(0,ChgValue_1);
+		LuaDataAgt:SetShareValue(1,ChgValue_2);
+		target:ChgStrAtk(VALUE_TYPE.CURRENT,ChgValue_1);
+		target:ChgWitAtk(VALUE_TYPE.CURRENT,ChgValue_2);
+		target:PlayFX("Prefabs/BasicEffect/3D_CharEff_WuFangShangSheng", target, currPos, currPos, 0, true);
+		target:PlayFX("Prefabs/BasicEffect/3D_CharEff_FaFangShangSheng", target, currPos, currPos, 1, true);
+		target:PlayFX("Prefabs/BuffEffect/Master_Qianghu", target, currPos, currPos, 0.3, true);
+	end
+
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+
+end
+
+Buff_10003 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+	func_doFilter = doFilter;
+}

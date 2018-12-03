@@ -1,0 +1,52 @@
+--[[
+名称：阵法通用buff
+类型：6个阵法通用
+描述：增加血量
+--]]
+local ThisScriptId = 50036;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	
+	local maxHp = LuaDataAgt:GetHp(VALUE_TYPE.RUNTIME_CONF);
+	print("1111111111111111111111-----"..maxHp);
+	local maxHpChgValue = maxHp * LuaDataAgt:GetResTacticsBuffValue(ThisScriptId);
+	LuaDataAgt:SetShareValue(0, maxHpChgValue);
+    --加血量比率
+    LuaDataAgt:ChgHp(VALUE_TYPE.RUNTIME_CONF,maxHpChgValue,LuaDataAgt,VALUE_CHG_TYPE.CHG_HP_COMM, 0, 0);
+
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+    
+	--加血量比率
+	local maxHpClear =  LuaDataAgt:GetShareValue(0);
+    LuaDataAgt:ChgHp(VALUE_TYPE.RUNTIME_CONF,-maxHpClear,LuaDataAgt,VALUE_CHG_TYPE.CHG_HP_COMM, 0, 0);
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+
+Buff_50036 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+}

@@ -1,0 +1,69 @@
+--[[
+名称：抬榇死战
+类型：主动技能
+描述：减速,减防
+--]]
+local ThisScriptId = 49;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	LuaDataAgt:SetShareValue(1,0);	
+	--buff时间设置
+	local itime = source:GetActiveSkillAdditionValue(3);								--BUFF时间参数
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);						    --BUFF时间
+	
+	local speed = source:GetActiveSkillAdditionValue(2);								--速度参数
+	if source:IsHaveActiveSkillCheats(2) then     --秘籍2：增加减速效果
+	    speed = speed * 1.2;
+	end
+	LuaDataAgt:ChgSpeedByRatio( 1 - speed / 100);
+	local iDef = LuaDataAgt:GetStrDef(VALUE_TYPE.RUNTIME_CONF)*0.2;
+	LuaDataAgt:SetShareValue(1,iDef);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT,-iDef);
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+    local source = LuaDataAgt:GetBuffSource();
+
+	local speed = source:GetActiveSkillAdditionValue(2);
+	if source:IsHaveActiveSkillCheats(2) then     --秘籍2：增加减速效果
+	    speed = speed * 1.2;
+	end
+	--移除减速
+	LuaDataAgt:ChgSpeedByRatio(- 1 + speed / 100);
+	local iDef = LuaDataAgt:GetShareValue(1);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT,iDef);
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_49 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+}

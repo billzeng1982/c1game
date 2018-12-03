@@ -1,0 +1,59 @@
+--[[
+名称：屏气凝神
+类型：星级被动
+描述：每次弓箭射击提升自身的弓箭伤害4%，持续10s，最多可叠加8层
+--]]
+local ThisScriptId = 6322;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 10);
+	
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP,TARGET_GROUP.NONE, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.HP and not IsOnServer then
+		local iHp = FilterValue.m_fFoo1;
+		if IsSource and FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_SHOOT then
+			local buffLevel = LuaDataAgt:GetBuffLevel();
+			FilterValue.m_fFoo1 = iHp * (1 + buffLevel * 0.04);
+		end
+	end
+	
+	return FilterValue;
+end
+
+Buff_6322 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

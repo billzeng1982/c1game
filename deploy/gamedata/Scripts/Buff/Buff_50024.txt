@@ -1,0 +1,60 @@
+--[[
+名称：风扬阵后援部队BUFF
+类型：骑兵阵法
+描述：增加突击伤害
+--]]
+local ThisScriptId = 50024; 
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, -11);	
+
+end
+
+--Buff驱散条件判断
+ local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+
+end
+	
+ --Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end	
+
+--技能生效,数值处理
+local function takeEffect(LuaDataAgt)
+
+end
+
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	if iFilterType == FILTER_TYPE.HP and FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_RUSH then
+	    local iHp = FilterValue.m_fFoo1;
+		if iHp < 0 and IsSource and not IsOnServer then
+			FilterValue.m_fFoo1 = iHp - iHp * LuaDataAgt:GetResTacticsBuffValue(ThisScriptId);
+			--FilterValue.m_fFoo1 = iHp - 100000;
+		end
+	end
+	
+	return FilterValue;
+end
+
+--这个ID要和脚本ID保持一致
+Buff_50024 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

@@ -1,0 +1,68 @@
+--[[
+名称：弑君
+类型：被动技能
+描述：李儒每击退一个敌人时，增加李儒全属性<color=#53de1c>50%</color>，持续<color=#53de1c>15</color>秒
+--]]
+local ThisScriptId = 6744;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 15);
+	
+	--属性加减
+	local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * 0.50;
+	local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * 0.50;		
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * 0.50;
+	local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * 0.50;	
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, AddStrAtk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT, AddWitAtk);	
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, AddStrDef);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, AddWitDef);
+	--LuaDataAgt:ChgSpeedByRatio(1.05);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减不回退
+	local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * 0.50;
+	local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * 0.50;		
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * 0.50;
+	local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * 0.50;	
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -AddStrAtk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT, -AddWitAtk);	
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -AddStrDef);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, -AddWitDef);
+	--LuaDataAgt:ChgSpeedByRatio(-1.05);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_6744 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

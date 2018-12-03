@@ -1,0 +1,75 @@
+--[[
+名称：国色天香
+类型：主动技能
+描述：大乔持续施法，回血消除DEBUFF
+--]]
+local ThisScriptId = 10115;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+
+	-- 设置技能公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--没有技能框 清除其它技能框
+	LuaDataAgt:ClearSkillRange();
+	LuaDataAgt:ClearAllSkillTarget();
+	
+	--出城时间判定，出城后5秒内不允许放技能
+	local passedTime = LuaDataAgt:GetOutCitySuccessTimePassed();
+	if passedTime < 3 then
+	    return false;
+	end
+	
+	--当前位置判定，在城墙下方的一段区域内不允许放技能
+	local pos = LuaDataAgt:GetCurPos();
+	if pos.z < 8  or  pos.z > 72 then 
+	    return false;
+	end 
+	
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	
+	--设置技能目标为自己，表示该技能有目标，才会播放受击特效，生效会延迟
+	local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.NONE);
+end
+
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	-- 让自己立马停下来
+	local currPos = LuaDataAgt:GetCurPos();
+	LuaDataAgt:MoveToDest(currPos, true);
+	
+	-- 添加跳舞Buff
+	LuaDataAgt:AddBuff(10115, LuaDataAgt, nil);
+	
+	-- 打断攻城
+	LuaDataAgt:InterruptSiege();
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+	local addHp = rSource:GetActiveSkillAdditionValue(1);					--加血的参数
+	iRet = addHp;
+	print ("addHp="..iRet);
+	return iRet;
+end
+
+GeneralSkill_10115 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	
+	func_doFormula = doFormula;
+}

@@ -1,0 +1,63 @@
+--[[
+名称：虚诱掩杀
+类型：武将技能Buff
+描述：让敌人走向自己并且自己增加攻击力
+--]]
+local ThisScriptId = 22;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--设置Buff过滤位置信息
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+	--设置Buff生命时间
+	--LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 200);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.HP and not IsSource then
+		local iHp = FilterValue.m_fFoo1;
+		if iHp < 0 then
+		    local iCurHp = LuaDataAgt:GetHp(VALUE_TYPE.CURRENT);
+			--血量只能减到1
+			if math.abs(iHp) >= iCurHp then
+				FilterValue.m_fFoo1 = -(iCurHp-1);
+			end		 
+		end
+	end
+	return FilterValue;
+end
+
+Buff_22 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

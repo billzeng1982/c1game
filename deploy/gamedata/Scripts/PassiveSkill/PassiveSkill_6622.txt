@@ -1,0 +1,72 @@
+--[[
+名称：黄盖被动4
+类型：被动技能
+描述：增加攻击，生命值低于50%增加更多的攻击
+--]]
+local ThisScriptId = 6622; 
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 添加血量过滤处理
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+	
+	local Chgvalue = LuaDataAgt:GetPassiveSkillBaseValue(ThisScriptId,1);
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, Chgvalue);
+	
+	print("RunBorn PassiveSkill Id = "..ThisScriptId);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt)
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	if IsOnServer then
+		LuaDataAgt:SetSkillEnable(false);
+		return;
+	end
+	
+	-- 一场战斗中只生效一次
+	LuaDataAgt:SetSkillEnable(false);
+end
+
+--Skill过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.HP then
+		local iHp = FilterValue.m_fFoo1;
+		if not IsSource and iHp < 0 then
+			local MaxHp = LuaDataAgt: GetHp(VALUE_TYPE.RUNTIME_CONF);
+			local CurrHp = LuaDataAgt: GetHp(VALUE_TYPE.CURRENT);
+			local HpRatio = CurrHp / MaxHp;
+			if HpRatio < 0.5 and LuaDataAgt:GetBuffLifeTimeById(ThisScriptId, VALUE_TYPE.CURRENT) < 0.5 then
+				LuaDataAgt:AddBuff(ThisScriptId, LuaDataAgt, nil);
+			end
+		end
+	end
+	
+	return FilterValue;
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+end
+
+--这个ID要和脚本ID保持一致
+PassiveSkill_6622 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	
+	func_doFormula = doFormula;
+	func_doFilter = doFilter;
+}

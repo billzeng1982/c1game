@@ -1,0 +1,113 @@
+--[[
+名称：青龙堰月
+类型：主动技能
+描述：关羽挥舞偃月刀斩向对手，对前方扇形范围敌军造成伤害，关羽速度越高，伤害越高。
+--]]
+local ThisScriptId = 2018;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	--扇形 25是半径 90是张角
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(1)  then
+		local level = LuaDataAgt:GetActiveSkillCheatsValue(1);
+		LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 5 * (1 + level / 100), 0);
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.FAN, 0, 0, 25 * (1 + level / 100), 90);  --- 秘籍1：增大范围
+		LuaDataAgt:MapDrawFan(25 * (1 + level / 100), - 5 * (1 + level / 100));
+	else
+		LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 5, 0);
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.FAN, 0, 0, 35, 90);
+		LuaDataAgt:MapDrawFan(35, 0);
+	end
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	--剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+	
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+
+	--AI操作需要至少命中n人，玩家操作无要求
+	if (AIId == 0) then
+
+	else
+		if targetList.Count > 0 then
+			return true;
+		else
+			return false;
+		end
+	end
+	
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	--扇形 25是半径 90是张角
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(1)  then
+		local level = LuaDataAgt:GetActiveSkillCheatsValue(1);
+		LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 5 * (1 + level / 100), 0);
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.FAN, 0, 0, 25 * (1 + level / 100), 90);  --- 秘籍1：增大范围
+	else
+		LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 5, 0);
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.FAN, 0, 0, 35, 90);
+	end
+
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	for i = 0,targetList.Count -1 do
+		-- 伤害
+		targetList:get_Item(i):ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+	end
+
+	LuaDataAgt:InterruptSiege();
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+
+	local StrAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+	local StrDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+	local Base = rSource:GetActiveSkillBaseValue(1);
+	local MinDmg = Base;
+	local Speed = rSource:GetMoveSpeed(VALUE_TYPE.CURRENT);
+	local SpeedDmgRatio = math.max((1.3 + math.max((Speed - 3.8) / 6 ,0)),1);
+
+	local Ratio = rSource:GetActiveSkillRateValue(1);
+	iRet = (Base + (StrAtk - StrDef) * Ratio) * SpeedDmgRatio;
+	iRet = math.max(iRet,MinDmg);
+
+	--武器觉醒特效 大招每击杀一名敌军 回复2点怒气
+	local remainHP = rTarget:GetHp(VALUE_TYPE.CURRENT);
+	if remainHP < iRet and not IsOnServer then
+		LuaDataAgt:ChgMorale(2);
+	end
+
+	return -iRet;
+end
+
+GeneralSkill_2018 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	func_doFormula = doFormula;
+}

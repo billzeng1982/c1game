@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="GBK" standalone="yes" ?>
+
+<metalib tagsetversion="1" name="LogQuerySvrCfg" version="1" >
+	<struct name="LogQuerySvrCfg" version="1" desc="主配置结构">
+		<entry name="ProcIDStr" 	  type="string"   size="20" />
+		<entry name="ProcID"		    type="int"      defaultvalue="0"/>
+		<entry name="IdipAgentIDStr" 	type="string"   size="20" />
+		<entry name="IdipAgentID"		type="int"      defaultvalue="0"/>
+		<entry name="BusGCIMKey"	    type="int" />
+
+        <entry name="SvrId"     type="int" />
+    	<entry name="DBAddr" 	type="string" size="20" />
+    	<entry name="DBName" 	type="string" size="32" />
+   	 	<entry name="Port" 		type="uint16" defaultvalue="3306"/>
+    	<entry name="User" 		type="string" size="32" />
+    	<entry name="Password" 	type="string" size="32" />
+
+    <!--mysql ping 的时间间隔-->
+    <entry name="PingFreq" type="int" defaultvalue="3600"/>
+    
+	</struct>
+</metalib>
+

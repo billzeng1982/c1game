@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="GBK" standalone="yes" ?>
+
+<metalib tagsetversion="1" name="MailSvrCfg" version="1" >
+	<struct name="MailSvrCfg" version="1" desc="主配置结构">
+		<entry name="ProcIDStr" 		type="string"       size="20" />
+		<entry name="ProcID"			type="int"          defaultvalue="0"/>
+		<entry name="ZoneSvrIDStr"  	type="string"	    size="20" />
+		<entry name="ZoneSvrID"		    type="int"		    defaultvalue="0"/>
+		<entry name="MailDBSvrIDStr" 	type="string"	    size="20" />
+		<entry name="MailDBSvrID"		type="int"		    defaultvalue="0"/>
+		<entry name="BusGCIMKey"		type="int" />
+        
+		<entry name="DirtyNumMax" 	    type="int"          defaultvalue="50"       desc="脏数据最大个数" />
+		<entry name="UpdateInterval"    type="int"          defaultvalue="300"      desc="数据回写数据库时间间隔" />
+		
+		<entry name="MailBoxMaxNum"		type="uint32"       defaultvalue="2000"	  desc="内存中邮件箱的最大数量(每个玩家对应一个邮件箱)" />
+	</struct>
+</metalib>
+

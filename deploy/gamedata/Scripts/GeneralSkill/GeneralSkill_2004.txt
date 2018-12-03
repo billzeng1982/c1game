@@ -1,0 +1,88 @@
+--[[
+名称：铁索连环
+类型：主动技能
+描述：庞统用铁锁将周围敌军禁锢起来，使其无法移动，任意一个被锁住的敌军受到伤害时，其余被锁住的敌军都会受到65%的伤害。
+--]]
+local ThisScriptId = 2004;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt, AIId)
+
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(1)  then
+		local level = LuaDataAgt:GetActiveSkillCheatsValue(1);
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 25, 25*(1+level/100), 0);  --- 秘籍1：增大范围
+		LuaDataAgt:MapDrawCircle(25,25*(1+level/100));
+	else
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 25, 25, 0);
+		LuaDataAgt:MapDrawCircle(25,25);
+	end
+
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+
+	--AI操作需要至少命中n人，玩家操作无要求
+	if (AIId == 0) then
+
+	else
+		if targetList.Count > 0 then
+			return true;
+		else
+			return false;
+		end
+	end
+
+	--小地图技能目标提示标志
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(1)  then
+		local level = LuaDataAgt:GetActiveSkillCheatsValue(1);
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 25, 25*(1+level/100), 0);  --- 秘籍1：增大范围
+	else
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 25, 25, 0);
+	end
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	local cnt = targetList.Count;
+	for i=0,cnt-1 do
+		local target = targetList:get_Item(i);
+		target:AddBuff(4, LuaDataAgt, targetList);
+		target:AddBuff(561, LuaDataAgt, targetList);
+
+		if not IsOnServer then
+			local TarPos = target:GetCurPos();
+			target:PlayFX("Prefabs/BasicEffect/3D_CharEff_JingGu", target, TarPos, TarPos, 0, true); -- 延迟0播该特效
+			target:PlayFX("Prefabs/BasicEffect/3D_CharEff_ShangHaiChuanDi", target, TarPos, TarPos, 0.8, true); -- 延迟0.1播该特效
+		end
+	end
+
+	LuaDataAgt:InterruptSiege();
+end
+
+GeneralSkill_2004 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+}

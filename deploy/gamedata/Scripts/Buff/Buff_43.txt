@@ -1,0 +1,81 @@
+--[[
+名称：鬼谋之术Buff
+类型：武将技能Buff
+描述：随机移动，并持续掉血
+--]]
+local ThisScriptId = 43;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置过滤器
+	LuaDataAgt:SetFilter(FILTER_TYPE.POS, TARGET_GROUP.NONE, 0);
+	
+	-- 设置公式
+	LuaDataAgt:SetSkillFormula(VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	-- 让部队随机移动
+	local pos = LuaDataAgt:GetCurPos();
+	LuaDataAgt:MoveToDest(pos, false);
+	
+	--持续掉血
+	local buffSource = LuaDataAgt:GetBuffSource();
+	LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 0, buffSource, VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+	local iTargetDef = rTarget:GetWitDef(VALUE_TYPE.CURRENT);
+	iRet = -iDamageRef * rSource:GetWitAtk(VALUE_TYPE.CURRENT) * (1 - iTargetDef / (iTargetDef + 60));
+	return iRet;
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.POS then
+		-- 让部队随机移动
+	    math.randomseed(os.time());
+		local ret1 = math.random(-1,1);
+		local ret2 = math.random(-1,1);
+		local destPos = LuaDataAgt:GetCurPos();
+		FilterValue.m_fFoo1 = destPos.x + ret1;
+		FilterValue.m_fFoo2 = destPos.y;
+		FilterValue.m_fFoo3 = destPos.z + ret2;
+
+		--print("destPos--"..destPos.x.."--"..destPos.y.."--"..destPos.z);
+	end
+	return FilterValue;
+end
+
+
+Buff_43 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFilter = doFilter;
+	func_doFormula = doFormula;
+}

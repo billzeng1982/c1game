@@ -1,0 +1,59 @@
+--[[
+名称：国色天香
+类型：主动技能
+描述：大乔持续施法，回血消除DEBUFF
+--]]
+local ThisScriptId = 542;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	local itime = 2 ;--BUFF时间
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	local dancePower = source:GetActiveSkillShareValue(0);
+	--调用的60号的技能公式
+	LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, dancePower, source, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, 60, 221);
+	
+	if IsOnServer then
+		local currPos = LuaDataAgt:GetCurPos();
+		--LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_HuiFu", LuaDataAgt, currPos, currPos, 0, true);
+	end
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+
+end
+
+Buff_542 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+	func_doFilter = doFilter;
+}

@@ -1,0 +1,60 @@
+--[[
+名称：怒喝八方
+类型：主动技能
+描述：强制使周围的敌军攻击自己，减敌军物攻并提升自己的物理攻击
+--]]
+local ThisScriptId = 10005;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20, 0);
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);		 
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+	
+	--没有技能框 清除其它技能框
+	LuaDataAgt:MapDrawCircle(0,20);
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+	if LuaDataAgt:HasBuff(510) then
+	    return false;
+	end
+	return true;
+	
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20, 0);
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	for i=0,targetList.Count-1 do	
+		--神来之戟
+		targetList:get_Item(i):AddBuff(24, LuaDataAgt, targetList);
+	end
+	--周泰自加buff
+	LuaDataAgt:AddBuff(510, LuaDataAgt, nil);
+	LuaDataAgt:InterruptSiege();
+end
+
+GeneralSkill_10005 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+}

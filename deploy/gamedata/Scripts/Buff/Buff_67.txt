@@ -1,0 +1,71 @@
+--[[
+名称：泣血毒薇
+类型：武将技能BUFF
+描述：每秒减血
+--]]
+local ThisScriptId = 67;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	-- Buff时间
+	local itime = source:GetActiveSkillAdditionValue(2);
+	if source:IsHaveActiveSkillCheats(2) then     --秘籍2：时间增长
+	    itime = itime * 1.1;
+	end
+	
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+	
+	-- 设置Buff公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 222);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 0, source, VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, VALUE_TYPE_POISON);
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+
+end
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+	
+	local BaseDamage = rSource:GetActiveSkillBaseValue(1);
+	local DamageRatio = rSource:GetActiveSkillRateValue(1);
+	local StrAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+	local StrDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+	
+	iRet = BaseDamage + (StrAtk - StrDef) * DamageRatio;
+	iRet = math.max (iRet,10);
+	
+	return -iRet;
+end
+
+Buff_67 = {
+func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFormula = doFormula;
+}

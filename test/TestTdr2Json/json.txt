@@ -1,0 +1,1 @@
+{"Head":{"MsgID":50001,"Uin":0,"ReservID":111},"Body":{"GetUinReq":{"AccountName":"billzeng"}}}

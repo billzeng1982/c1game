@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="GBK" standalone="yes" ?>
+<metalib tagsetversion="1" name="ZoneSvrCfg" version="1" >
+	<struct name="ZoneSvrCfg" version="1" desc="主配置结构">
+		<entry name="ProcIDStr" 			type="string" 	size="20" />
+		<entry name="ProcID"				type="int" 		defaultvalue="0"/>
+		<entry name="AccountSvrIDStr" 		type="string" 	size="20" />
+		<entry name="AccountSvrID"			type="int" 		defaultvalue="0"/>
+		<entry name="RoleSvrIDStr" 		    type="string" 	size="20" />
+		<entry name="RoleSvrID"			    type="int" 		defaultvalue="0"/>
+		<entry name="ClusterGateIDStr" 	    type="string" 	size="20" />
+		<entry name="ClusterGateID"		    type="int" 		defaultvalue="0"/>
+		<entry name="RankSvrIDStr" 		    type="string" 	size="20" />
+		<entry name="RankSvrID"			    type="int" 		defaultvalue="0"/>
+		<entry name="MessageSvrIDStr" 		type="string" 	size="20" />
+		<entry name="MessageSvrID"			type="int" 		defaultvalue="0"/>
+		<entry name="GuildSvrIDStr" 		type="string" 	size="20" />
+		<entry name="GuildSvrID"			type="int" 		defaultvalue="0"/>
+		<entry name="MailSvrIDStr" 		    type="string" 	size="20" />
+		<entry name="MailSvrID"			    type="int" 		defaultvalue="0"/>
+		<entry name="FriendSvrIDStr" 		type="string" 	size="20" />
+		<entry name="FriendSvrID"			type="int" 		defaultvalue="0"/>
+		<entry name="ReplaySvrIDStr" 		type="string" 	size="20" />
+		<entry name="ReplaySvrID"			type="int" 		defaultvalue="0"/>
+		<entry name="XiYouSDKSvrIDStr" 		type="string" 	size="20" />
+		<entry name="XiYouSDKSvrID"			type="int" 		defaultvalue="0"/>
+        <entry name="SdkDMSvrIDStr" 		type="string" 	size="20" />
+		<entry name="SdkDMSvrID"			type="int" 		defaultvalue="0"/>
+    	<entry name="SerialNumSvrIDStr" 	type="string" 	size="20" />
+    	<entry name="SerialNumSvrID"		type="int" 		defaultvalue="0"/>
+		<entry name="ConnIDStr" 			type="string"	size="20" />
+		<entry name="ConnID"				type="int"		defaultvalue="0"/>
+    	<entry name="IdipAgentSvrIDStr" 	type="string"	size="20" />
+    	<entry name="IdipAgentSvrID"		type="int"		defaultvalue="0"/>		
+    	<entry name="MiscIDStr" 			type="string"	size="20" />
+    	<entry name="MiscID"				type="int"		defaultvalue="0"/>
+		<entry name="AsyncPvpSvrIDStr" 		type="string" 	size="20" />
+		<entry name="AsyncPvpSvrID"			type="int" 		defaultvalue="0"/>
+        <entry name="CloneBattleSvrIDStr" 	type="string" 	size="20" />
+        <entry name="CloneBattleSvrID"		type="int" 		defaultvalue="0"/>
+        <entry name="ZoneHttpConnIDStr"     type="string"   size="20" />
+        <entry name="ZoneHttpConnID"        type="int"   defaultvalue="0" />
+		<entry name="BusGCIMKey" 			type="int" />
+
+		<entry name="MaxOnlinePlayer" 		type="int" 		desc="最大在线玩家数,同ZoneConn的MaxFD"/>
+		<entry name="PlayerUptDBFreq" 		type="int" 		desc="玩家更新db频率, 秒" 		 		defaultvalue="300" />
+		<entry name="ReconnectWaitTime" 	type="int" 		desc="重连等待时间, 秒, 填0直接logout"  defaultvalue="60"/>
+		<entry name="LoginTimeOut"			type="int" 		desc="登录超时" 				 		defaultvalue="10"/>
+
+		<entry name="ReportInterval"		type="uint32"	defaultvalue="60"  desc="上报状态到ClusterGate间隔 秒"/>
+
+   	 	<entry name="LoginSDKSwitch"		type="int"		defaultvalue="0"        desc="登录时是否需要去SDK服务器验证开关 0:不需要 1:需要"/>
+    	<entry name="GmDebugSwitch"   		type="int"    	defaultvalue="0"        desc="是否开启gm调试功能 0：不需要 1：需要"/>
+        <entry name="TestPaySwitch"         type="int"      defaultvalue="0"        desc="是否开启测试付费功能 0：不开启 1：开启"/>
+        <entry name="SerialNumSwitch"       type="int"      defaultvalue="0"      desc="是否打开礼品码 0:不打开 1:打开"/>
+        <entry name="GuildFightSwitch"      type="int"      defaultvalue="1"      desc="军团战开关 0:不打开 1:打开"/>
+        <entry name="MineSwitch"            type="int"      defaultvalue="1"      desc="矿洞开关 0:不打开 1:打开"/>
+		<!--数据仓库日志配置-->
+		<entry name="LogCfgPath"			type="string"	size="128" />
+		<entry name="CltLogTdrPath"			type="string"	size="128" 				desc="dwlog_clt.bin path"  defaultvalue=""/>
+		<entry name="SvrLogTdrPath"			type="string"   size="128" 				desc="dwlog_svr.bin path"/>
+		<entry name="PlayerBufferSize"		type="uint32"	defaultvalue="25600"    desc="每个Player的包缓存队列大小" />
+
+		<!--服务器配置-->
+		<entry name="SvrId"					type="uint16"	  					desc="服务器id" />
+		<entry name="SvrName"				type="string"	size="64"   		desc="服务器名字" />
+		<entry name="SvrIpStr"				type="string"	size="64"   		desc="服务器ip" />
+		<entry name="SvrIp"					type="int32"	  					desc="服务器ip" />
+		<entry name="SvrPort"				type="uint16"	  					desc="服务器端口" />
+        <entry name="SvrOpenTime"			type="string"	size="64"   		desc="服务器开服时间" />
+        <entry name="SvrFinishUptTime"    type="string" size="64"       desc="服务器更新完成时间" />
+
+		<!--目录服务器-->
+		<entry name="DirSvrIpStr"			type="string"	size="64"   		desc="目录服务器ip" />
+		<entry name="DirSvrIp"				type="int32"	  					desc="目录服务器ip" />
+		<entry name="DirSvrPort"			type="uint16"	  					desc="目录服务器端口" />
+
+		<entry name="FeedBackUrl"			type="string"	size="64"   		desc="错误反馈的URL" />
+	</struct>
+
+</metalib>

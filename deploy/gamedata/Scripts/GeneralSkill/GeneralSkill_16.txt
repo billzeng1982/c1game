@@ -1,0 +1,142 @@
+--[[
+名称：直捣黄龙
+类型：主动技能
+描述：魏延悍不畏死直取城墙，在攻城时立即对城墙造成大量伤害。
+--]]
+local ThisScriptId = 16;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+	LuaDataAgt:SetShareValue(0,0); --根据伤害吸血
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+
+	LuaDataAgt:FindTargetCityEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 45, 10, 90);
+	local targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 45, 10, 90);  --- 15 = （20 + 部队大小）/ 2
+
+	LuaDataAgt:MapDrawRectangle(0,10,190,0,0);
+
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+
+	--目标是对面距离最近的
+	LuaDataAgt:RemoveNotMiniTarget(targetList, CURRENT_VALUE_TYPE.DISTANCE);
+
+	--小地图技能目标提示标志
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+
+	--AI操作需要至少命中n人，玩家操作无要求
+	if (AIId == 0) then
+
+	else
+		if targetList.Count > 0 then
+			return true;
+		else
+			return false;
+		end
+	end
+
+	LuaDataAgt:SetSkillPrompt(5);
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+
+	LuaDataAgt:FindTargetCityEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 45, 10, 90);
+	local targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 45, 10, 90);
+
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+	--目标是对面距离最近的
+	LuaDataAgt:RemoveNotMiniTarget(targetList, CURRENT_VALUE_TYPE.DISTANCE);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	if targetList.Count > 0 then
+		for i = 0 , targetList.Count - 1 do
+			local target = targetList:get_Item(i);
+			target:ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+
+			LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 1, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 221);
+			
+			if not IsOnServer then
+				local CurPos = LuaDataAgt:GetCurPos();
+				--LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_HuiFu", LuaDataAgt, CurPos, CurPos, 1.5, true); -- 延迟1.5播该特效
+				LuaDataAgt:PlayFX("Prefabs/BuffEffect/Buff_JiaXue",  LuaDataAgt, CurPos, CurPos, 1, true);
+			end
+		end
+	else
+		local city = LuaDataAgt:GetTargetCity(TARGET_GROUP.ENEMY);
+		if city ~= nil then
+			city:ChgHp(VALUE_TYPE.CURRENT, 2, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+		end
+	end
+	LuaDataAgt:InterruptSiege();
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+	if iDamageRef == 0 then
+		-- 给敌人伤害
+		local StrAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+		local StrDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+		local Base = rSource:GetActiveSkillBaseValue(1);
+		local MinDmg = Base;
+		local Ratio = rSource:GetActiveSkillRateValue(1);
+
+		iRet = Base + (StrAtk - StrDef) * Ratio;
+		iRet = math.max(iRet, MinDmg);
+		LuaDataAgt:SetShareValue(0,iRet);
+	elseif iDamageRef == 1 then
+		-- 自己吸血
+		local SuckBloodRatio = rSource:GetActiveSkillBaseValue(3) / 100;
+		iRet = LuaDataAgt:GetShareValue(0)*SuckBloodRatio ;
+		local iMaxHp = LuaDataAgt:GetHp(VALUE_TYPE.RUNTIME_CONF)*0.2;
+		if LuaDataAgt:IsHaveActiveSkillCheats(1) then    --秘籍1:吸血效果提高20%
+			iRet = iRet * 1.2;
+		end
+
+		iRet = -math.min(iRet,iMaxHp);
+
+	elseif iDamageRef == 2 then
+		-- 给城墙伤害
+		local CityDmg = rSource:GetActiveSkillBaseValue(2);
+		iRet = CityDmg;
+	end
+
+	if LuaDataAgt:IsHaveActiveSkillCheats(2) and iRet > 0 then    --秘籍2:20%几率1.5倍伤害
+	    math.randomseed(tostring(os.time()+iRet):reverse():sub(1, 6));
+	    local i = math.random(1,100);
+		if i < 21 then
+		    iRet = iRet * 1.5;
+		end
+	end
+
+	return -iRet;
+end
+
+GeneralSkill_16 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+
+	func_doFormula = doFormula;
+}

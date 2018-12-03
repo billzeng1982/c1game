@@ -1,0 +1,63 @@
+--[[
+名称:好为人师
+类型:被动技能
+描述:增加友军所有魏国武将的伤害，同时上场魏国武将数大于等于4个，则效果翻倍<color=#53de1c>50%</color>翻倍buff13016
+--]]
+local ThisScriptId = 6822;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	local rSource = LuaDataAgt:GetBuffSource();
+	local PassiveSkillRatio = rSource:GetPassiveSkillBaseValue(6822,1) / 100;
+	local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * PassiveSkillRatio;
+	local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * PassiveSkillRatio;
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,AddStrAtk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,AddWitAtk);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+
+		local TarPos = LuaDataAgt:GetCurPos();
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_ShangHaiQiangHua", LuaDataAgt, TarPos, TarPos, 5, true);
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	local rSource = LuaDataAgt:GetBuffSource();
+	local PassiveSkillRatio = rSource:GetPassiveSkillBaseValue(6822,1) / 100;
+	local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * PassiveSkillRatio;
+	local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * PassiveSkillRatio;
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,-AddStrAtk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,-AddWitAtk);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_6822 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

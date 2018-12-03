@@ -1,0 +1,63 @@
+--[[
+名称：通用易伤
+类型：武将技能秘籍BUFF
+描述：秘籍1 带易伤
+--]]
+local ThisScriptId = 531;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+    local source = LuaDataAgt:GetBuffSource();
+
+	--设置过滤器
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.HP and not IsSource then
+		local iHp = FilterValue.m_fFoo1;
+		if iHp < 0 then 
+		    local source = LuaDataAgt:GetBuffSource();
+		    local extra = source:GetActiveSkillCheatsValue(1);
+			iHp = iHp * (1 + extra / 100);
+			FilterValue.m_fFoo1 = iHp;
+		end
+	end
+	
+	return FilterValue;
+end
+
+Buff_531 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

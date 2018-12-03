@@ -1,0 +1,74 @@
+--[[
+名称:姿貌威严
+类型:被动技能
+描述:黄盖的普攻有几率点燃敌方<color=#53de1c>30%</color>
+--]]
+local ThisScriptId = 6620; 
+
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 5);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+		
+		local TarPos = LuaDataAgt:GetCurPos();
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_DianRan", LuaDataAgt, TarPos, TarPos, 0.5, true); 
+	end
+	
+	-- 设置Buff公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	return true;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 0, source, VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 224);
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+
+end
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local StrAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+	local StrDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+	local BaseDamage = rSource:GetPassiveSkillBaseValue(ThisScriptId, 1);
+
+	local DamageRatio = 0.2;
+	iRet = BaseDamage- StrDef;
+	iRet = math.max (iRet,100);
+	
+	return -iRet;
+end
+
+Buff_6620 = {
+func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFormula = doFormula;
+}

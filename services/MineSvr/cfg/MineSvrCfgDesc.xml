@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+
+<metalib tagsetversion="1" name="MineSvrCfg" version="1" >
+	<struct name="MineSvrCfg" version="1" desc="主配置结构">
+		<entry name="ProcIDStr" 		    type="string"       size="20" />
+		<entry name="ProcID"			    type="int"          defaultvalue="0"/>
+		<entry name="ClusterGateIDStr"  	type="string"	    size="20"   />
+		<entry name="ClusterGateID"		    type="int"		    defaultvalue="0"/>
+        <entry name="MineDBSvrIDStr" 	    type="string"	    size="20" />
+        <entry name="MineDBSvrID"		    type="int"		    defaultvalue="0"/>
+		<entry name="BusGCIMKey"		    type="int" />
+        <entry name="SvrID"		            type="int" />
+		<entry name="DirtyNumMax" 	        type="int"          defaultvalue="30"       desc="脏数据最大个数" />
+		<entry name="UpdateInterval"        type="int"          defaultvalue="300"      desc="数据回写数据库时间间隔" />
+		<entry name="MaxCoroutine"		    type="uint32"       defaultvalue="300"	  desc="协程最大数" />
+        <entry name="AsyncActionNumInit"	type="int"          defaultvalue="100"/>
+        <entry name="AsyncActionNumDeta"	type="int"          defaultvalue="50"/>
+        <entry name="AsyncActionNumMax"	    type="int"          defaultvalue="1000"/>
+        <entry name="MineOreNumInit"		type="int"          defaultvalue="500"/>
+        <entry name="MineOreNumDeta"		type="int"          defaultvalue="100"/>
+        <entry name="MineOreNumMax"		    type="int"          defaultvalue="100000"/>
+        <entry name="MinePlayerNumInit"		type="int"          defaultvalue="500"/>
+        <entry name="MinePlayerNumDeta"		type="int"          defaultvalue="100"/>
+        <entry name="MinePlayerNumMax"		type="int"          defaultvalue="100000"/>
+        <entry name="DelayCheckOreSec"		type="int"          defaultvalue="300"/>
+	</struct>
+</metalib>
+

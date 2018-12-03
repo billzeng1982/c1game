@@ -1,0 +1,8 @@
+Account	表中常用的where字段为 AccountName		UNIQUE KEY AccountName (AccountName)
+Friend	表中常用的where字段为 Uin和RoleName		PRIMARY KEY (Uin),UNIQUE KEY Name (Name)
+Role	表中常用的where字段为 Uin和RoleName		UNIQUE KEY Uin (Uin), KEY RoleName (RoleName)
+GuildPlayer 表中常用where字段为	UIn				PRIMARY KEY (id), UNIQUE KEY Uin (Uin)
+Guild	表中常用where字段为	GuildId和Name		UNIQUE KEY GuildId (GuildId), KEY Name (Name)
+MailPri	表中常用where字段为	Uin					PRIMARY KEY (Uin)
+MailPub	表中常用where字段为	Uin					PRIMARY KEY (Uin)
+Message	表中常用where字段为	PlayerUin			PRIMARY KEY (PlayerUin)

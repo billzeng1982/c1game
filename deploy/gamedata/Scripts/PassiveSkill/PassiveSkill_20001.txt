@@ -1,0 +1,480 @@
+--[[
+名称：公式被动
+类型：被动技能
+描述：游戏对象的公用公式集中处理处
+--]]
+local ThisScriptId = 20001;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+       -- 血量过滤
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, -4);
+	-- 公式注册
+
+	-- 通用公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_COMM, 0, 0);
+
+	local iGoType = LuaDataAgt:GetGoType();
+	if (iGoType == FIGHTOBJ_TYPE.FIGHTOBJ_PLAYER) then
+
+	elseif (iGoType == FIGHTOBJ_TYPE.FIGHTOBJ_WALL) then
+		-- 城墙上的公式
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_CITYBACK, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_CITYGATEBACK, 0, 0);
+
+	elseif (iGoType == FIGHTOBJ_TYPE.FIGHTOBJ_TROOP) then
+		-- 部队上的公式
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_CITYGATE, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_CITYWALL, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_TOWER, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_BARRIER, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_NORMAL, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_SHOOT, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_SPEAR, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_RUSH, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_FACE, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_ATK_AMBUSH, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_SOLO, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_REVIVE, 0, 0);
+		LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_PASSIVESKILL, ThisScriptId, 0)
+
+	elseif (iGoType == FIGHTOBJ_TYPE.FIGHTOBJ_BARRIER) then
+
+	elseif (iGoType == FIGHTOBJ_TYPE.FIGHTOBJ_TOWER) then
+
+	elseif (iGoType == FIGHTOBJ_TYPE.FIGHTOBJ_CATAPULT) then
+
+	else
+
+	end
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt)
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	if IsOnServer then
+		LuaDataAgt:SetSkillEnable(false);
+		return;
+	end
+
+	-- 被动技能一场比赛只生效一次
+	LuaDataAgt:SetSkillEnable(false);
+end
+
+--公式列表
+local tableFormula = {
+	[VALUE_CHG_TYPE.CHG_HP_COMM] = function(rSource, rTarget, iDamageRef)
+		--// 通用伤血，使用iDamageRef值
+		local iRet = iDamageRef;
+		return iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_CITYGATE] = function(rSource, rTarget, iDamageRef)
+		--// 攻城门 武将相关
+		local iRet = 0;
+		local strAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+		local gAtkCiyValue = rSource:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_BASE_CITYATK);
+		iRet = gAtkCiyValue * 1.6;
+		if(rTarget:GetSelfTroopCountOnBattle() <= 0) then
+			--// 城门一方没有部队在战场，就伤害加倍
+			iRet = iRet * 2;
+		end
+		iRet = math.max(iRet, 100);
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_CITYWALL] = function(rSource, rTarget, iDamageRef)
+		--// 攻城墙
+		local iRet = 0;
+		local strAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+		--//武将对城墙伤害
+		local gAtkCiyValue = rSource:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_BASE_CITYATK);
+		iRet = gAtkCiyValue;
+
+		iRet = math.max(iRet, 100);
+
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_CITYBACK] = function(rSource, rTarget, iDamageRef)
+		--// 城墙反伤 和主公等级相关
+		local iRet = 0;
+		--local strDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+		local AntiCriticalChanceLimit = rTarget:GetAttributeLimit(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_ANTICRITICAL);
+		local IsBoss = (AntiCriticalChanceLimit - 1000);
+		local TotalHp = rTarget:GetHp(VALUE_TYPE.RUNTIME_CONF);
+		local siegeBack = rTarget:GetSiegeBackRatio();
+		if (IsBoss == 1) and (not IsOnServer) then
+			siegeBack = siegeBack / 10;
+		end
+		siegeBack = siegeBack * TotalHp / 1000;
+		iRet = math.max(siegeBack, 100);
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_CITYGATEBACK] = function(rSource, rTarget, iDamageRef)
+		--// 城门反伤 和主公等级相关
+		local iRet = 0;
+		--local strDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+		local TotalHp = rTarget:GetHp(VALUE_TYPE.RUNTIME_CONF);
+		local AntiCriticalChanceLimit = rTarget:GetAttributeLimit(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_ANTICRITICAL);
+		local IsBoss = (AntiCriticalChanceLimit - 1000);
+		local siegeBack = rTarget:GetSiegeBackRatio();
+		if (IsBoss == 1) and (not IsOnServer) then
+			siegeBack = siegeBack / 10;
+		end
+		siegeBack = siegeBack * TotalHp * 1.5 / 1000;
+		iRet = math.max(siegeBack, 100);
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_TOWER] = function(rSource, rTarget, iDamageRef)
+		--// 攻瞭望塔
+		local iRet = 0;
+		local armyType = rSource:GetArmyType();
+		iRet = 1;
+		if (armyType == ARMY_TYPE.ARMY_SPEARMAN) then
+			-- 枪兵加伤害
+			iRet = 2;
+		end
+		if (armyType == ARMY_TYPE.ARMY_SHIELDMAN) then
+			-- 刀盾加伤害
+			iRet = 2;
+		end
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_BARRIER] = function(rSource, rTarget, iDamageRef)
+		--// 攻栅栏
+		local iRet = 0;
+		iRet = 1;
+				local armyType = rSource:GetArmyType();
+		iRet = 1;
+		if (armyType == ARMY_TYPE.ARMY_SPEARMAN) then
+			-- 枪兵加伤害
+			iRet = 2;
+		end
+		if (armyType == ARMY_TYPE.ARMY_SHIELDMAN) then
+			-- 刀盾加伤害
+			iRet = 2;
+		end
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_NORMAL] = function(rSource, rTarget, iDamageRef)
+		--// 白兵
+		local iRet = 0;
+		local strAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+		local strDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+		local fRestrain = rSource:GetArmyRestrain(rSource, rTarget);
+		local BaseDamage = rSource:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_BASE_NORMALATK);
+		iRet = ( BaseDamage + (strAtk - strDef) * 1 ) * fRestrain;
+		iRet = math.max(iRet, 100);
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_SHOOT] = function(rSource, rTarget, iDamageRef)
+		--// 射击
+		local iRet = 0;
+		local strAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+		local strDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+		local witAtk = rSource:GetWitAtk(VALUE_TYPE.CURRENT);
+		local witDef = rTarget:GetWitDef(VALUE_TYPE.CURRENT);
+		local armyType = rTarget:GetArmyType();
+		local BaseDamage = 0;
+		if (rSource:GetArmyType() == ARMY_TYPE.ARMY_ARCHER) then
+		    BaseDamage = rSource:GetArmyBaseValue();	    -- 伤害，和兵种等级相关,第一个是固定值，第二个是成长值
+			iRet = BaseDamage + (strAtk - strDef) * 2; --弓兵伤害公式
+		elseif (rSource:GetArmyType() == ARMY_TYPE.ARMY_WISER) then
+		    BaseDamage = rSource:GetArmyBaseValue();
+			iRet = BaseDamage + (strAtk - strDef) + (witAtk - witDef); --法师伤害公式
+		else
+		    BaseDamage = rSource:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_BASE_NORMALATK);
+			iRet = BaseDamage +  (strAtk - strDef) + (witAtk - witDef); --方士伤害公式
+		end
+
+		if (rSource:GetArmyType() == ARMY_TYPE.ARMY_ARCHER and armyType == ARMY_TYPE.ARMY_CAVALRY ) then
+			-- 弓兵对骑兵减伤20%
+			iRet = iRet * 0.8;
+			if (rTarget:HasBuff(9998)) then
+				-- 弓兵对突击波骑兵减伤总计80%
+				iRet = iRet * 0.3;
+			end
+		end
+
+		--[[
+		if (rSource:GetArmyType() == ARMY_TYPE.ARMY_ARCHER and armyType == ARMY_TYPE.ARMY_SPEARMAN) then
+			 --弓兵对枪兵增伤
+			iRet = iRet * 1.1;
+		end
+		]]
+
+		iRet = math.max(iRet, 100);
+		print("shotDamage == "..iRet);
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_SPEAR] = function(rSource, rTarget, iDamageRef)
+		--// 枪击
+		local iRet = 0;
+		local strAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+		local strDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+		local BaseDamage = rSource:GetArmyBaseValue();
+
+		iRet = BaseDamage + (strAtk - strDef) * 1;
+		iRet = math.max(iRet, 100);
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_RUSH] = function(rSource, rTarget, iDamageRef)
+		--// 突击
+		local iRet = 0;
+		local strAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+		local strDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+
+		local BaseDamage = rSource:GetArmyBaseValue();	-- 伤害，和兵种等级相关
+		local armyType = rTarget:GetArmyType();
+		
+		iRet = BaseDamage + (strAtk - strDef) * 3.5;
+		
+		if (rSource:GetArmyType() == ARMY_TYPE.ARMY_CAVALRY and armyType == ARMY_TYPE.ARMY_ARCHER) then
+			 --对弓兵加成
+			iRet = iRet * 1.2;
+		end
+		
+		if (rSource:GetArmyType() == ARMY_TYPE.ARMY_CAVALRY and armyType == ARMY_TYPE.ARMY_WISER) then
+			 --对军师加成
+			iRet = iRet * 1.2;
+		end
+		
+		if (rSource:GetArmyType() == ARMY_TYPE.ARMY_CAVALRY and armyType == ARMY_TYPE.ARMY_TAOIST) then
+			 --对方士加成
+			iRet = iRet * 1.2;
+		end
+		
+		iRet = math.max(iRet, 100);
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_FACE] = function(rSource, rTarget, iDamageRef)
+		--// 迎击
+		local iRet = 0;
+		local strAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+		local strDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+
+		local BaseDamage = rSource:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_BASE_NORMALATK);
+
+		iRet = BaseDamage * 1.5 + (strAtk - strDef) * 1.5;
+		iRet = math.max(iRet, 100);
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_ATK_AMBUSH] = function(rSource, rTarget, iDamageRef)
+		--// 伏兵
+		local iRet = 0;
+		local witAtk = rSource:GetWitAtk(VALUE_TYPE.CURRENT);
+		local witDef = rTarget:GetWitDef(VALUE_TYPE.CURRENT);
+
+		local BaseDamage = rSource:GetArmyBaseValue();	-- 伤害，和兵种等级相关
+
+		iRet = BaseDamage * 2 + (witAtk - witDef) * 2;
+		iRet = math.max(iRet, 100);
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_SOLO] = function(rSource, rTarget, iDamageRef)
+		--// 单挑
+		local iRet = 0;
+		local fHpCur = rTarget:GetHp(VALUE_TYPE.CURRENT);
+		iRet = fHpCur;
+		return -iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_REVIVE] = function(rSource, rTarget, iDamageRef)
+		--// 复活
+		local iRet = 0;
+		local fHpMax = rTarget:GetHp(VALUE_TYPE.RUNTIME_CONF);
+		iRet = fHpMax;
+		return iRet;
+	end,
+
+	[VALUE_CHG_TYPE.CHG_HP_PASSIVESKILL] = function(rSource, rTarget, iDamageRef)
+		--// 吸血被动,取攻击方
+		local SuckBloodRatio = rSource:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_SUCKBLOOD) / 1000;
+		--// 吸血值上限0.45
+		local SuckBloodRatioLimit = rSource:GetAttributeLimit(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_SUCKBLOOD) / 1000;
+		SuckBloodRatio = math.min(SuckBloodRatio,SuckBloodRatioLimit);
+		local iRet = iDamageRef;
+		iRet = -iRet * SuckBloodRatio;
+		--print("SuckHp = "..iRet);
+		return iRet;
+	end,
+
+}
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+	local formula = tableFormula[iFormulaType];
+	if (formula ~= nil) then
+		iRet = formula(rSource, rTarget, iDamageRef);
+	end
+
+	if iFormulaType == VALUE_CHG_TYPE.CHG_HP_ATK_NORMAL
+	or iFormulaType == VALUE_CHG_TYPE.CHG_HP_ATK_SHOOT
+	or iFormulaType == VALUE_CHG_TYPE.CHG_HP_ATK_SPEAR
+	or iFormulaType == VALUE_CHG_TYPE.CHG_HP_ATK_RUSH
+	or iFormulaType == VALUE_CHG_TYPE.CHG_HP_ATK_FACE then
+		--------------------------------------------
+		--// 概率属性和真实伤害处理
+		--概率部分取参数,闪避、招架、抗暴击取受击方，命中、暴击取攻击方
+		local DodgeChance = rTarget:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_DODGE) / 1000;
+		local BlockChance = rTarget:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_BLOCK) / 1000;
+		local HitChance = rSource:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_HIT) / 1000;
+		local CriticalChance = rSource:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL) / 1000;
+		--print ("CriticalChance = "..CriticalChance);
+		local AntiCriticalChance = rTarget:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_ANTICRITICAL) / 1000;
+
+
+		--非概率部分，暴击、真实伤害取攻击方，抗暴击、招架取受击方
+		local CriticalRatio = rSource:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL_VALUE) / 1000;
+		--print ("CriticalRatio = "..CriticalRatio);
+		local AntiCriticalRatio = rTarget:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_ANTICRITICAL_VALUE) / 1000;
+		--print ("AntiCriticalRatio = "..AntiCriticalRatio);
+		local BlockRatio = rTarget:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_BLOCK_VALUE) / 1000;
+		local RealDmgPoint = rSource:GetAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_DAMAGEADD);
+
+
+		--概率计算
+		local FinalDodgeChance = math.max((DodgeChance - HitChance), 0);
+		local FinalCriticalChance =  math.max((CriticalChance - AntiCriticalChance), 0);
+		local FinalBlockChance = math.max((BlockChance - math.max((HitChance - DodgeChance),0) ),0);
+
+		--概率部分取上限
+		local DodgeChanceLimit = rTarget:GetAttributeLimit(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_DODGE) / 1000;
+		local CriticalChanceLimit = rSource:GetAttributeLimit(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL) / 1000;
+		local BlockChanceLimit = rTarget:GetAttributeLimit(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_BLOCK) / 1000;
+		FinalDodgeChance = math.min(FinalDodgeChance,DodgeChanceLimit);
+		FinalCriticalChance = math.min(FinalCriticalChance,CriticalChanceLimit);
+
+		FinalBlockChance = math.min(FinalBlockChance,BlockChanceLimit);
+
+
+		--系数计算
+		local FinalCriticalRatio = math.max((CriticalRatio - AntiCriticalRatio),1); --暴击减少最多减到正常伤害量
+	--print ("FinalCriticalRatio_1 = "..FinalCriticalRatio);
+		local FinalBlockRatio = 1 - BlockRatio;
+		if iFormulaType == VALUE_CHG_TYPE.CHG_HP_ATK_SPEAR
+		or iFormulaType == VALUE_CHG_TYPE.CHG_HP_ATK_RUSH
+		or iFormulaType == VALUE_CHG_TYPE.CHG_HP_ATK_FACE then
+		       FinalCriticalRatio = (FinalCriticalRatio - 1) * 0.5 + 1;  --枪击、迎击、突击的暴击效果和招架效果减半
+		       FinalBlockRatio = 1 - BlockRatio * 0.5;
+		end
+
+		--系数部分取上限
+		local CriticalRatioLimit = rSource:GetAttributeLimit(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL_VALUE) / 1000;
+		local BlockRatioLimit = 1 - rTarget:GetAttributeLimit(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_BLOCK_VALUE) / 1000;
+		FinalCriticalRatio = math.min(FinalCriticalRatio,CriticalRatioLimit);
+		--print ("FinalCriticalRatio = "..FinalCriticalRatio);
+		FinalBlockRatio = math.max(FinalBlockRatio,BlockRatioLimit);
+
+
+
+		--招架减伤不超过100%
+		FinalBlockRatio = math.max(FinalBlockRatio,0);
+
+
+		--区间计算
+		local SectionDodge = FinalDodgeChance;
+		local SectionCritical = SectionDodge + FinalCriticalChance;
+		local SectionBlock = SectionCritical + FinalBlockChance;
+		--print ("SectionCritical = "..SectionCritical);
+
+		--掷骰确定落入区间,并乘以系数
+		math.randomseed(os.time())
+		local randomValue = math.random();
+		--print ("randomValue = "..randomValue);
+		if (randomValue <= SectionDodge) then
+			iRet = 0;  --闪避
+			rTarget:SetDamageFxType(DAMAGE_FX_TYPE.DAMAGE_FX_DODGE);
+			--print("Dodge");
+		elseif (randomValue <= SectionCritical) then
+			iRet = iRet * FinalCriticalRatio;  --暴击
+			if (FinalCriticalRatio > 1) then
+				if (randomValue >= SectionDodge) then
+				iRet = iRet - RealDmgPoint;
+				end
+				rTarget:SetDamageFxType(DAMAGE_FX_TYPE.DAMAGE_FX_CRITICAL);
+			end
+			--print("Critical");
+		elseif (randomValue <= SectionBlock) then
+			iRet = iRet * FinalBlockRatio;  --招架，减伤
+			if (FinalBlockRatio < 1) then
+				rTarget:SetDamageFxType(DAMAGE_FX_TYPE.DAMAGE_FX_BLOCK);
+			end
+			--print("Block");
+		else
+			--普通伤害
+			if (iRet ~= 0 and not IsOnServer) then
+				if (randomValue >= SectionDodge) then
+				iRet = iRet - RealDmgPoint;
+				end
+			end
+			--print("Normal");
+		end
+
+		--附加真实伤害，闪避时不附加
+		if (randomValue >= SectionDodge) then
+			iRet = iRet - RealDmgPoint;
+		end
+		--------------------------------------------
+
+	end
+	if not IsOnServer then
+		--print("iFormulaType = " .. VALUE_CHG_TYPE.EnumToInt(iFormulaType) .. ", rSource.Id = " .. rSource:GetGoId() .. ", rTarget.Id = " .. rTarget:GetGoId() .. ", iDamage = " .. iRet);
+	end
+
+	--print ("iRet = "..iRet);
+	return iRet;
+end
+
+--吸血过滤
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	if iFilterType == FILTER_TYPE.HP then
+		if not IsOnServer and IsSource then
+			local iHp = FilterValue.m_fFoo1;
+			--不计算攻城、技能、伏兵、撞障碍物的伤害
+			if (iHp < 0 and
+			(FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_NORMAL or
+			 FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_SHOOT or
+			 FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_SPEAR or
+			 FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_RUSH or
+			 FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_ATK_FACE)) then
+				rFilterOwner:ChgHp(VALUE_TYPE.CURRENT, iHp, rFilterOwner, VALUE_CHG_TYPE.CHG_HP_PASSIVESKILL, ThisScriptId, 221);
+			end
+		end
+	end
+	return FilterValue;
+end
+
+
+--这个ID要和脚本ID保持一致
+PassiveSkill_20001 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+
+	func_doFormula = doFormula;
+	func_doFilter = doFilter;
+}

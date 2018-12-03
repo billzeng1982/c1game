@@ -1,0 +1,76 @@
+--[[
+名称：轮枪之阵
+类型：主动技能
+描述：每1.5秒可以对所有方向的敌人造成一次枪击伤害
+--]]
+local ThisScriptId = 10007;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--小地图技能目标提示标志
+	LuaDataAgt:ClearAllSkillTarget();
+	--没有技能框 清除其它技能框
+	LuaDataAgt:ClearSkillRange();
+	if LuaDataAgt:HasBuff(40)  then 
+	    return false;
+	end
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	
+	--设置技能目标为自己，表示该技能有目标，生效会延迟
+	local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.NONE);
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+	local fStrAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+	local fStrDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+	
+	local fAtkPara = 60;
+	local fDefPara = 60;
+	local fSpearDamageBase = 80;
+	local fSpearDamageRatio = 1;
+	local fCounterDamageBase = 400;
+	local fCounterDamageRatio = 5;
+	
+	local fSpeed = rTarget:GetMoveSpeed(VALUE_TYPE.CURRENT);
+	local fFaceCond = 5.5;
+	local fFaceSpeedRatio = 1.2;
+    if iDamageRef == 0 then
+		--枪击
+		iRet = -(fSpearDamageBase + fStrAtk * fSpearDamageRatio) * (1 - fStrDef / (fStrDef + fDefPara));
+	end 
+	
+	if iDamageRef == 1 then
+	   --迎击
+	   iRet = -(fCounterDamageBase + fStrAtk * fCounterDamageRatio + 100 * (fSpeed - fFaceCond) * fFaceSpeedRatio) * (1 - fStrDef / (fStrDef + fDefPara));
+	end
+	
+	return iRet;
+end
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	LuaDataAgt:AddBuff(40, LuaDataAgt, nil);
+	
+	LuaDataAgt:InterruptSiege();
+end
+
+GeneralSkill_10007 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	func_doFormula = doFormula;
+}

@@ -1,0 +1,28 @@
+--[[
+名称：吃金币关卡使用
+返回值：是否结束，胜利方，结束原因
+描述：
+1、时间到，我方胜利
+--]]
+
+local function checkPVEEndCond(LuaFightController)
+	--判断是否结束
+	local bIsEnd = false;
+	local eWiner = PLAYER_GROUP.PLAYER_GROUP_NONE;
+	local eReason = FIGHTSETTLE_REASON.FIGHTSETTLE_NONE;
+	local iLeftTime = LuaFightController:GetCurFightTime();
+	
+	--判断结束条件，策划可以修改
+	if iLeftTime <= 0 then
+		bIsEnd = true;
+		--判断胜负方，策划可以修改
+		eWiner = PLAYER_GROUP.PLAYER_GROUP_DOWN;
+		eReason = FIGHTSETTLE_REASON.FIGHTSETTLE_TIMEOVER;
+	end
+	
+	return bIsEnd, eWiner, eReason;
+end
+
+PVEEndCond_2 = {
+	func_PVEEndCond = checkPVEEndCond;
+}

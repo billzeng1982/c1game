@@ -1,0 +1,53 @@
+--[[
+名称：火焰灼伤
+类型：军师技Buff
+描述：火焰灼伤
+--]]
+local ThisScriptId = 9994;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置Buff公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+    local isDead = LuaDataAgt:IsDead();
+	if not isDead then
+	    --给非死亡部队减血
+		LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+	end
+end
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+
+	local addValue = -50;
+    iRet = addValue ;
+	return iRet;
+end
+
+Buff_9994 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFormula = doFormula;
+}

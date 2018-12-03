@@ -1,0 +1,53 @@
+--[[
+名称：虎卫统领
+类型：星级被动Buff
+描述：典韦在场时，本方其他武将降低4%伤害
+--]]
+local ThisScriptId = 5400;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+	
+	--print("runBorn " .. ThisScriptId);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--print("runDead " .. ThisScriptId);
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	if iFilterType == FILTER_TYPE.HP then
+		local iHp = FilterValue.m_fFoo1;
+		if not IsSource and iHp < 0 then
+			FilterValue.m_fFoo1 = iHp * 0.96;
+		end
+	end
+end
+
+Buff_5400 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

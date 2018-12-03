@@ -1,0 +1,66 @@
+--[[
+名称:火焰印记
+类型:被动技能
+描述:火焰印记驱散后爆炸伤害
+--]]
+local ThisScriptId = 563; 
+
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置Buff公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+	print("runDead end");
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	print("boom ready");
+	LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 224);
+	print("boom successful");
+end
+
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	
+	local DamageRatio = LuaDataAgt:GetBuffSource():GetPassiveSkillBaseValue(6040,2) / 100;
+	local rSource = LuaDataAgt:GetBuffSource();
+	local WitAtk = rSource:GetWitAtk(VALUE_TYPE.CURRENT);
+	local WitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.CURRENT);
+	print("ratio = "..DamageRatio);
+	print("witatk = "..WitAtk);
+	print("witdef = "..WitDef);
+	iRet =(WitAtk - WitDef) * DamageRatio;
+	iRet = math.max (iRet, 200);
+	
+	return -iRet;
+end
+
+Buff_563 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFormula = doFormula;
+}

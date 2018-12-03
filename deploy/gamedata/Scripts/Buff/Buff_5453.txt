@@ -1,0 +1,54 @@
+--[[
+名称：都督之心
+类型：星级被动Buff
+描述：本方所有部队全属性+4
+--]]
+local ThisScriptId = 5453;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, 4);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT, 4);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, 4);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, 4);
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -4);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT, -4);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -4);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, -4);
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_5453 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

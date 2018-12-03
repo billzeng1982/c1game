@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="GBK" standalone="yes" ?>
+
+<multi_machines __version="1">
+
+    <machineList>
+
+        <!--machine 是数组类型-->
+        <!--可容纳 2048 个元素-->
+        <!--machine.IP: MUST be UNIQUE and NOT be a lookback IP-->
+        <!--machine.listenPort: SHOULD be bigger than 1024-->
+        <machine machineName="send_machine" IP="172.25.40.106" GCIMShmKey="1688" AddrTemplet="8.8.8.8" relayShmKey="2688" listenPort="8899">
+
+            <processList>
+
+                <!--process 是数组类型-->
+                <!--可容纳 32 个元素-->
+                <!--process.name: MUST be UNIQUE-->
+                <!--process.id: MUST be UNIQUE [0.0.0.1 ~ 255.255.255.254]-->
+                <process name="send_A" id="1.0.0.1"/>
+                <process name="send_B" id="1.0.0.2"/>
+                <process name="send_C" id="1.0.0.3"/>
+                <process name="send_D" id="1.0.0.4"/>
+                <process name="send_E" id="1.0.0.5"/>
+
+            </processList>
+
+        </machine>
+
+        <machine machineName="trsf_machine" IP="172.25.40.107" GCIMShmKey="1688" AddrTemplet="8.8.8.8" relayShmKey="2688" listenPort="8899">
+
+            <processList>
+
+                <!--process 是数组类型-->
+                <!--可容纳 32 个元素-->
+                <!--process.name: MUST be UNIQUE-->
+                <!--process.id: MUST be UNIQUE [0.0.0.1 ~ 255.255.255.254]-->
+                <process name="trsf" id="2.0.0.1"/>
+                <process name="stat" id="2.1.0.1"/>
+
+            </processList>
+
+        </machine>
+
+        <machine machineName="recv_machine" IP="172.25.40.108" GCIMShmKey="1688" AddrTemplet="8.8.8.8" relayShmKey="2688" listenPort="8899">
+
+            <processList>
+
+                <!--process 是数组类型-->
+                <!--可容纳 32 个元素-->
+                <!--process.name: MUST be UNIQUE-->
+                <!--process.id: MUST be UNIQUE [0.0.0.1 ~ 255.255.255.254]-->
+                <process name="recv_A" id="3.0.0.1"/>
+                <process name="recv_B" id="3.0.0.2"/>
+
+            </processList>
+
+        </machine>
+
+
+    </machineList>
+
+    <communication>
+
+        <!--connection: every communication MUST be UNIQUE-->
+        <!--connection 是数组类型-->
+        <!--可容纳 8192 个元素-->
+        <connection nameOfProcessA="send_A" nameOfProcessB="trsf" bufferSize="20480000"/>
+        <connection nameOfProcessA="send_B" nameOfProcessB="trsf" bufferSize="20480000"/>
+        <connection nameOfProcessA="send_C" nameOfProcessB="trsf" bufferSize="20480000"/>
+        <connection nameOfProcessA="send_D" nameOfProcessB="trsf" bufferSize="20480000"/>
+        <connection nameOfProcessA="send_E" nameOfProcessB="trsf" bufferSize="20480000"/>
+
+        <connection nameOfProcessA="trsf" nameOfProcessB="stat" bufferSize="20480000"/>
+
+        <connection nameOfProcessA="trsf" nameOfProcessB="recv_A" bufferSize="20480000"/>
+        <connection nameOfProcessA="trsf" nameOfProcessB="recv_B" bufferSize="20480000"/>
+
+    </communication>
+
+</multi_machines>
+

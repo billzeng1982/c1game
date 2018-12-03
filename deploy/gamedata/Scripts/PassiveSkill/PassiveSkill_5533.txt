@@ -1,0 +1,64 @@
+--[[
+名称：带病征战	
+类型：被动技能
+描述：血量低于50%，加8%全属性
+--]]
+local ThisScriptId = 5533;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 添加血量过滤处理
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt)
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	if IsOnServer then
+		LuaDataAgt:SetSkillEnable(false);
+		return;
+	end
+	
+	-- 一场战斗中只生效一次
+	LuaDataAgt:SetSkillEnable(false);
+end
+
+--Skill过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if not IsOnServer and iFilterType == FILTER_TYPE.HP then
+			local maxHp = LuaDataAgt:GetHp(VALUE_TYPE.RUNTIME_CONF);
+			local curHp = LuaDataAgt:GetHp(VALUE_TYPE.CURRENT);
+			local iHp = FilterValue.m_fFoo1;
+			if curHp <= maxHp * 0.5 then
+				LuaDataAgt:AddBuff(ThisScriptId, LuaDataAgt, nil);
+                      else
+				LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+		        end
+			if curHp <= -iHp then	
+			       LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+		        end
+	end
+	
+	return FilterValue;
+end
+PassiveSkill_5533 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

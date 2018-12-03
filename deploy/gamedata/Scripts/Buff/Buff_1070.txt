@@ -1,0 +1,111 @@
+--[[
+名称：攻击之阵
+类型：军师技Buff
+描述：加攻60加法攻70
+--]]
+local ThisScriptId = 1070;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 8);
+	local curAddRatio = LuaDataAgt:GetMSAddValue4Buff() / 100;	-- 获得效果增益
+	local iStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.RUNTIME_CONF);
+	local iWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.RUNTIME_CONF);
+	iStrAtk = iStrAtk * curAddRatio;
+	print("curAddRatio=="..curAddRatio);
+	iWitAtk = iWitAtk * curAddRatio;
+	
+	LuaDataAgt:SetShareValue(0,iStrAtk);
+	LuaDataAgt:SetShareValue(1,iWitAtk);
+	
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,iStrAtk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,iWitAtk);
+	--[[
+	local curProgress = LuaDataAgt:GetMSProgress4Buff();	-- 获得进度
+	local curAddRatio = LuaDataAgt:GetMSAddRatioPower4Buff();	-- 获得效果增益
+	local maxValue1 = 600;
+	local minValue1 = 150;	
+	local maxValue2 = 700;
+	local minValue2 = 150;
+	
+	--计算公式
+	local addValue2 = 0;
+	local addValue1 = 0;
+	if curProgress >= 1.0 then
+		addValue2 = maxValue2;
+		addValue1 = maxValue1;
+	else
+		addValue2 = minValue2 + curProgress *( maxValue2 - minValue2) * 0.6;
+		addValue1 = minValue1 + curProgress *( maxValue1 - minValue1) * 0.6;
+	end
+	
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,addValue1 * curAddRatio);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,addValue2 * curAddRatio);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+	]]
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	local iStrAtk = LuaDataAgt:GetShareValue(0);
+	local iWitAtk = LuaDataAgt:GetShareValue(1);
+
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,-iStrAtk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,-iWitAtk);
+	--[[
+	local curProgress = LuaDataAgt:GetMSProgress4Buff();	-- 获得进度
+	local curAddRatio = LuaDataAgt:GetMSAddRatioPower4Buff();	-- 获得效果增益
+	local maxValue1 = 600;
+	local minValue1 = 150;	
+	local maxValue2 = 700;
+	local minValue2 = 150;
+	
+	--计算公式
+	local addValue2 = 0;
+	local addValue1 = 0;
+	if curProgress >= 1.0 then
+		addValue2 = maxValue2;
+		addValue1 = maxValue1;
+	else
+		addValue2 = minValue2 + curProgress *( maxValue2 - minValue2) * 0.6;
+		addValue1 = minValue1 + curProgress *( maxValue1 - minValue1) * 0.6;
+	end
+	
+	
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,-addValue1 * curAddRatio);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,-addValue2 * curAddRatio);
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end 
+	]]
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+
+Buff_1070 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

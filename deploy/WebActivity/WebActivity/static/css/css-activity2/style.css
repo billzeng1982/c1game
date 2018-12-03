@@ -1,0 +1,101 @@
+@charset "utf-8";
+html{
+    font-size: 20px;
+    height: 100vh;
+}
+body{
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    position: relative;
+
+}
+  .back{
+    left: 95%;
+    position:fixed;
+    top:0;
+    width:5%;
+    z-index: 999999;
+}
+.backButton{
+  background-image:url(../../img/item-activity1/cancel.png);
+     background-repeat: no-repeat;
+    background-size: 100% 100%;
+     padding-bottom:100%;
+}
+.title{
+    text-align: center;
+    width: 100%;
+    background-color:#54BDFF ;
+    height: 1rem;
+}
+.titleFont{
+    color: white;
+    line-height:1rem;
+    font-size:0.6rem;
+}
+.backPage{
+    float: left;
+    font-size:0.5rem;
+    color: blue;
+    line-height:1rem;
+}
+.page{
+    text-align: left;
+     width: 90%;
+
+    margin-left: 5%;
+}
+.texttitle{
+    margin-top: 1%;
+    color: #32d6ff;
+    font-size: 2vw;
+
+}
+.time{
+    float: right;
+    color: darkgray;
+}
+.line{
+    color:#54BDFF ;
+}
+.h1{
+    font-size: 5vmax;
+}
+.h2{
+    font-size: 3vmax;
+}
+.p1{
+    font-size: 2vmax;
+    margin-bottom: 2%;
+}
+.img{
+    width: 100%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+.index{
+    color: darkgrey;
+    font-size:2vmax;
+    margin-bottom: 1%;
+     border: 1px;
+    border-style: solid;
+    border-color:darkgray;
+    border-radius:1vmax;
+}
+.top{
+     font-size:2vmax;
+     float: right;
+    color: darkgray;
+    border: 1px;
+    border-style: solid;
+    border-color:darkgray;
+    border-radius: 1vmax;
+}
+.foot{
+    margin-bottom: 2%;
+}
+a:link {color: darkgray}               /* 未被访问的链接*/
+a:visited {color: darkgray}            /* 已被访问过的链接 */
+a:hover {color: darkgray}            /* 鼠标悬浮在上的链接*/
+a:active {color: darkgray}   /* 鼠标点中激活链接*/

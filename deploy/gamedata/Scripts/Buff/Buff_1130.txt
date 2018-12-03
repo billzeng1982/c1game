@@ -1,0 +1,57 @@
+--[[
+名称：封印之阵Buff
+类型：军师技Buff
+描述：禁止使用武将计
+--]]
+local ThisScriptId = 1130;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--设置过滤器
+	LuaDataAgt:SetFilter(FILTER_TYPE.COND, TARGET_GROUP.NONE, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.COND then
+		if IsSource then
+			--不能释放武将技能
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_GENERALSKILL then
+				FilterValue.m_fFoo1 = 0;
+			end
+		end
+	end
+	return FilterValue;
+end
+
+Buff_1130 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFilter = doFilter;
+}

@@ -1,0 +1,119 @@
+--[[
+名称：天下归心
+类型：主动技能
+描述：曹操以让人折服的心胸和气度，让敌军信服归顺，对周围敌军造成伤害并回复等量生命。
+--]]
+local ThisScriptId = 10131;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList;
+	--出城时间判定，出城后5秒内不允许放技能
+	local passedTime = LuaDataAgt:GetOutCitySuccessTimePassed();
+	if passedTime < 5 then
+	    return false;
+	end
+	
+	--当前位置判定，在城墙下方的一段区域内不允许放技能
+	local pos = LuaDataAgt:GetCurPos();
+	if pos.z < 8  or  pos.z > 72 then
+	    return false;
+	end
+	
+	
+	if LuaDataAgt:IsHaveActiveSkillCheats(1) then 
+	    local level = LuaDataAgt:GetActiveSkillCheatsLevel();
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20*(1+level/100), 0);  --- 秘籍1：增大范围
+		LuaDataAgt:MapDrawCircle(0,20*(1+level/100));
+	else
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20, 0);
+		LuaDataAgt:MapDrawCircle(0,20);
+	end
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);		 
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+    if targetList.Count < 1 then
+	return false;
+	end
+	
+	--没有技能框 清除其它技能框
+	
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(1)  then 
+	    local level = LuaDataAgt:GetActiveSkillCheatsLevel();
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20*(1+level/100), 0);  --- 秘籍1：增大范围
+	else
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20, 0);
+	end
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+
+	for i = 0,targetList.Count - 1 do
+		--扣血
+		    local WitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.CURRENT);
+		    iWitDef = targetList:get_Item(i):GetWitDef(VALUE_TYPE.CURRENT);
+	        local Base = LuaDataAgt:GetActiveSkillAdditionValue(3);
+	        local MinDmg = Base;
+	        local Ratio = LuaDataAgt:GetActiveSkillAdditionValue(4);
+	        local a = LuaDataAgt:GetActiveSkillAdditionValue(2);
+	        iRet = Base + (WitAtk - iWitDef) * Ratio;
+	        iRet = math.max(iRet,MinDmg);
+	        print ("Damege="..iRet);
+		targetList:get_Item(i):ChgHp(VALUE_TYPE.CURRENT, -iRet, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+
+		if LuaDataAgt:IsHaveActiveSkillCheats(2) then    --秘籍2：带易伤
+		    targetList:get_Item(i):AddBuff(517,LuaDataAgt,targetList);
+		end
+		--加血
+		LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, -iRet, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+	end
+	
+	LuaDataAgt:InterruptSiege();
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = iDamageRef;
+
+	if LuaDataAgt:Equal(rTarget) then
+		local a = rSource:GetActiveSkillAdditionValue(2);
+		-- 目标是自己则加血
+		iRet = -iRet * a/100;
+	else
+		-- 目标是敌人减血
+	end
+	return iRet;
+end
+
+GeneralSkill_10131= {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	
+	func_doFormula = doFormula;
+}

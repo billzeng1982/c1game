@@ -1,0 +1,64 @@
+--[[
+名称：江东元勋	
+类型：星级被动Buff
+描述：撤退后加自身全属性10%，持续全场，可叠加
+--]]
+local ThisScriptId = 5624;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * 0.10;
+	local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * 0.10;		
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * 0.10;
+	local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * 0.10;	
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,AddStrAtk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,AddWitAtk);	
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT,AddStrDef);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT,AddWitDef);
+	--LuaDataAgt:ChgSpeedByRatio(1.05);
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减不回退
+	--local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * 0.10;
+	--local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * 0.10;		
+	--local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * 0.10;
+	--local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * 0.10;	
+	--LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,-AddStrAtk);
+	--LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,-AddWitAtk);	
+	--LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT,-AddStrDef);
+	--LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT,-AddWitDef);
+	--LuaDataAgt:ChgSpeedByRatio(-1.05);
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_5624 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

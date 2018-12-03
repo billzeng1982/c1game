@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="GBK" standalone="yes" ?>
+
+<metalib tagsetversion="1" name="MineDBSvrCfg" version="1" >
+  <struct name="MineDBSvrCfg" version="1" desc="主配置结构">
+    <entry name="ProcIDStr" 	    type="string"   size="20" />
+    <entry name="ProcID"		    type="int"      defaultvalue="0"/>
+    <entry name="MineSvrIDStr" 	    type="string"   size="20" />
+    <entry name="MineSvrID"		    type="int"      defaultvalue="0"/>
+
+    <entry name="BusGCIMKey"	    type="int" />
+    <entry name="DBAddr" 	type="string" size="20" />
+    <entry name="DBName" 	type="string" size="32" />
+    <entry name="Port" 		type="uint16" defaultvalue="3306"/>
+    <entry name="User" 		type="string" size="32" />
+    <entry name="Password" 	type="string" size="32" />
+
+    <entry name="SvrId"   type="uint16"  desc="服务器id" />
+    <entry name="PingFreq" type="int" defaultvalue="3600"/>
+      <entry name="WorkThreadNum" 	type="int" defaultvalue="1" desc="工作线程数量"/>
+      <entry name="ThreadQBaseShmKey" type="int" defaultvalue="0" />
+      <entry name="ThreadQSize" 		type="uint32" desc="主从线程间通信管道大小" />
+      <entry name="TableNum"			type="int"	defaultvalue="1" />
+  </struct>
+</metalib>

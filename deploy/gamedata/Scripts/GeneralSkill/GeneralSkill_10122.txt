@@ -1,0 +1,128 @@
+--[[
+名称：一箭穿云
+类型：主动技能
+描述：找到离自己最近的部队 造成伤害并添加buff_1,关卡2-5用
+--]]
+local ThisScriptId = 10122;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	
+	--出城时间判定，出城后5秒内不允许放技能
+	local passedTime = LuaDataAgt:GetOutCitySuccessTimePassed();
+	if passedTime < 5 then
+	    return false;
+	end
+	
+
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(2) then 
+	    local iRange = LuaDataAgt:GetActiveSkillCheatsValue(2)/100 + 1;
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 37.5, 15 * iRange, 75 * iRange);  --- 秘籍2：增大范围
+	    LuaDataAgt:MapDrawRectangle(0,15 * iRange,190 * iRange,0,0);
+	else
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 37.5, 15, 75);  --- 15 = （20 + 部队大小）/ 2
+	    LuaDataAgt:MapDrawRectangle(0,15,190,0,0);
+	end
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	 
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+	
+	--目标是对面距离最近的
+	LuaDataAgt:RemoveNotMiniTarget(targetList, CURRENT_VALUE_TYPE.DISTANCE);
+	
+	--小地图技能目标提示标志
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+	
+	if targetList.Count < 1 then
+		return false;
+	end
+	
+	LuaDataAgt:SetSkillPrompt(5);
+	return ture;
+
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(2)  then 
+	    local iRange = LuaDataAgt:GetActiveSkillCheatsValue(2)/100 + 1;
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 37.5, 15 * iRange, 75 * iRange);  --- 秘籍2：增大范围
+	else 
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 37.5, 15, 75);  ---
+	end
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+	--目标是对面距离最近的
+	LuaDataAgt:RemoveNotMiniTarget(targetList, CURRENT_VALUE_TYPE.DISTANCE);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	for i = 0 , targetList.Count - 1 do
+	    targetList:get_Item(i):ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+	    targetList:get_Item(i):AddBuff(ThisScriptId, LuaDataAgt, nil);
+	end
+	
+	if LuaDataAgt:IsHaveActiveSkillCheats(1) then      --秘籍1 ：附带易伤
+		if targetList.Count > 0 then
+			targetList:get_Item(0):AddBuff(531, LuaDataAgt, nil);
+		end
+	end	
+	LuaDataAgt:InterruptSiege();
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+	if iDamageRef == 0 then
+			local StrAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+	        local StrDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+	        local Base = rSource:GetActiveSkillAdditionValue(3);
+	        local MinDmg = Base;
+	        local Ratio = rSource:GetActiveSkillAdditionValue(4);
+	        iRet = Base + (StrAtk - StrDef) * Ratio;
+	        iRet = math.max(iRet,MinDmg);
+	        print ("Damege 1="..iRet);
+
+	elseif iDamageRef == 1 then
+	        local StrAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+	        local StrDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+	        local Base = rSource:GetActiveSkillAdditionValue(3);
+	        local MinDmg = Base;
+	        local Ratio = rSource:GetActiveSkillAdditionValue(4);
+			local cheastValue = rSource:GetActiveSkillCheatsValue(2);
+	        iRet = (Base + (StrAtk - StrDef) * Ratio )* cheastValue / 100;
+	        iRet = math.max(iRet,MinDmg);
+	        print ("Damege 2="..iRet);
+	end
+
+	return -iRet;
+end
+
+GeneralSkill_10122 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	
+	func_doFormula = doFormula;
+}

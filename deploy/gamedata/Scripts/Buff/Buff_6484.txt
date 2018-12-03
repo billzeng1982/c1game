@@ -1,0 +1,65 @@
+--[[
+名称：被动触发跳舞
+类型：被动
+描述：马上对敌军造成伤害，如果没有敌人就城墙掉血
+--]]
+local ThisScriptId = 6484;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+    
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	
+	local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.ENEMY);
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	
+	if targetList.Count > 0 then
+		for i = 0,targetList.Count-1 do
+			targetList:get_Item(i):AddBuff(545, LuaDataAgt, nil);
+		end
+	else
+		local city = LuaDataAgt:FindTargetCity(TARGET_GROUP.ENEMY);
+		city:ChgHp(VALUE_TYPE.CURRENT, 1, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, 48, 0);
+		
+		-- 播放特效（带延迟）
+		local destPos = LuaDataAgt:GetTroopOppositeWallPos();
+		destPos.x = 40;
+		LuaDataAgt:PlayFX("Prefabs/BuffEffect/Buff_Gmss_Cq", LuaDataAgt, destPos, destPos, 0, false);
+	end
+	
+	LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+end
+
+
+
+Buff_6484 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+		
+}

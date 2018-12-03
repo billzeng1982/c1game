@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="GBK" standalone="yes" ?>
+<metalib tagsetversion="1" name="OvRes" version="1" >
+
+	<include file="ov_res_public.xml"/>
+
+	<!-- 仅server使用资源档定义 -->
+	<!--
+		所有的struct定义以Res做为前缀
+		所有的宏定义以RES_做为前缀
+		变量命名尽量达到 "信达雅"
+
+		注意:ID类型统一为int型
+	-->
+
+	<!--
+		常量定义 begin
+	-->
+	<macro name="RES_MAX_ACTIVITY_BONUS_NUM"		value="6"		desc="活动激活码奖励最大个数"/>
+
+	<macrosgroup name="LOTTERY_POND_TYPE" desc="奖池类型">
+		<macro name="LOTTERY_POND_GOLD" 	value="1" desc="金币抽"/>
+		<macro name="LOTTERY_POND_DIAMOND" 	value="2" desc="钻石抽"/>
+	</macrosgroup>
+
+	<macrosgroup name="DRAW_LOTTERY_TYPE" desc="抽奖类型">
+		<macro name="DRAW_LOTTERY_GOLD" 	value="1" desc="金币抽"/>
+		<macro name="DRAW_LOTTERY_DIAMOND" 	value="2" desc="钻石抽"/>
+		<macro name="DRAW_LOTTERY_DIAMOND_TEN" 	value="3" desc="钻石10连抽"/>
+	</macrosgroup>
+
+	<macrosgroup name="RES_BONUS_TYPE" desc="奖励类型">
+		<macro name="RES_BONUS_GENERAL" 	value="1" desc="武将"/>
+		<macro name="RES_BONUS_EQUIP" 		value="2" desc="装备"/>
+		<macro name="RES_BONUS_ITEM" 		value="3" desc="物品"/>
+	</macrosgroup>
+
+	<!--
+		常量定义 end
+	-->
+
+    <!-- 服务器list dirsvr使用 start-->
+    <struct name="ResServer" version="1" desc="服务器信息">
+        <entry name="Id"            type="uint32"   cname="Id"/>
+        <entry name="IsEnable"      type="uint8"    cname="是否开启"    desc="0:关闭(不下发);1:开启(下发)"/>
+        <entry name="SvrId"         type="uint32"   cname="服务器Id" />
+        <entry name="SvrName"       type="string"   cname="Name"        size="RES_MAX_DESC_LEN"/>
+        <entry name="Ip"            type="string"   cname="Ip"          size="RES_MAX_DESC_LEN"/>
+        <entry name="Port"          type="uint16"   cname="Port"/>
+        <entry name="Status"        type="uint8"    cname="状态"          desc="服务器状态 详见commonproto"/>
+        <entry name="Url"           type="string"   cname="域名"          size="RES_MAX_DESC_LEN_128"/>
+    </struct>
+    <!-- 服务器list dirsvr使用 end -->
+
+	<!--
+		结构体定义 begin
+	-->
+	<struct name="ResLotteryDrawType" version="1" desc="奖池奖票映射">
+		<entry name="Id" 				type="uint32" 	cname="ID"/>
+		<entry name="DrawTypeDesc" 		type="string" 	size="RES_MAX_DESC_LEN" cname="抽奖类型"/>
+		<entry name="DefaultPondId"		type="uint32" 	cname="默认奖池的ID"/>
+		<entry name="ConsumeItemType"	type="uint8" 	cname="消耗物品类型"/>
+		<entry name="ConsumeItemId"		type="uint32" 	cname="消耗物品ID"/>
+		<entry name="ConsumeItemNum"	type="uint32" 	cname="消耗物品数量"/>
+	</struct>
+
+	<struct name="ResPondLotteryMap" version="1" desc="奖池奖票映射">
+		<entry name="Id" 			type="uint32" 		cname="ID"/>
+		<entry name="PondId" 		type="uint32" 	cname="奖池ID"/>
+		<entry name="LotteryId" 	type="uint32" 	cname="奖票ID"/>
+		<entry name="Probability" 	type="uint32"	cname="奖票概率区间"/>
+	</struct>
+
+	<struct name="ResLotteryBonusMap" version="1" desc="奖票奖励映射" >
+		<entry name="Id" 			type="uint32" 		cname="ID" />
+		<entry name="LotteryId" 	type="uint32" 	cname="奖票ID" />
+		<entry name="Probability" 	type="uint32" 	cname="奖品概率区间" />
+		<entry name="BonusType" 	type="uint8" 	cname="奖励类型" />
+		<entry name="BonusId" 		type="uint32" 	cname="奖品ID" />
+		<entry name="BonusNum" 		type="uint32" 	cname="奖励数量" />
+		<entry name="ShowType"		type="uint8" 	cname="是否展示" desc="0:不展示,1:武将,2:装备" />
+	</struct>
+
+	<struct name="ResLotteryRule" version="1" desc="抽奖规则" >
+		<entry name="Id" 			type="uint32" 	cname="ID" />
+		<entry name="DrawTypeId" 	type="uint32" 	cname="抽奖类型"/>
+		<entry name="IsLoop" 		type="uint8" 	cname="是否循环计数"/>
+		<entry name="AccumuCnt" 	type="uint16" 	cname="累计次数"/>
+		<entry name="RechargeCnt" 	type="uint16" 	cname="充值次数"/>
+		<entry name="RechargeRMB" 	type="uint32" 	cname="充值人民币金额"/>
+		<entry name="IntervalDays"	type="uint8" 	cname="登陆时间间隔天"/>
+		<entry name="ClassScore"	type="uint8" 	cname="期望品阶"/>
+		<entry name="PondId" 		type="uint32" 	cname="奖池ID"/>
+		<entry name="Priority" 		type="uint8" 	cname="优先级"/>
+		<entry name="isDrawTens"    type="uint8"    cname="10连标记" />
+	</struct>
+
+	<struct name="ResDiaLotteryRule" version="1" desc="钻石抽奖规则替换原来的" >
+		<entry name="Id" 			type="uint32" 	cname="ID" />
+		<entry name="PondId" 		type="uint32" 	cname="奖池ID"/>
+	</struct>
+
+	<struct name="ResLotteryFreeCond" version="1" desc="免费抽奖条件" >
+		<entry name="Id" 			type="uint32" 	cname="ID" />
+		<entry name="DrawTypeId" 	type="uint32" 	cname="抽奖类型"/>
+		<entry name="GoldDrawMaxNum" type="uint8"   cname="金币单抽每日最大次数" desc="钻石抽无此限制，填0"/>
+		<entry name="UpdateTimeStr"	type="string" 	size="32" cname="刷新时间" desc="金币抽，00:00:00" />
+		<entry name="UpdateTime"	type="long"		desc="由UpdateTimeStr转化而来"/>
+		<entry name="IntervalMinutes1" type="uint16" cname="间隔时间1" desc="分钟"/>
+		<entry name="IntervalMinutes2" type="uint16" cname="间隔时间2" desc="分钟"/>
+	</struct>
+
+	<struct name="ResBMarketBasic" version="1" desc="黑市基本信息">
+		<entry name="Id"				type="uint32"	cname="类型Id" />
+		<entry name="IndexItemType"	  	type="uint8"	cname="索引物品类型" />
+	</struct>
+
+	<struct name="ResBMarketRandom" version="1" desc="黑市奖励信息">
+		<entry name="Id"				type="uint32"	cname="Id" />
+		<entry name="LimitEndLv"		type="uint16"	cname="等级区间" />
+		<entry name="UpdateType"		type="uint8"   	cname="刷新类型" />
+		<entry name="Range"				type="uint32"   cname="概率区间" />
+		<entry name="ItemType"  		type="uint32"   cname="商品类型" />
+		<entry name="ItemId"  			type="uint32"   cname="商品Id" />
+		<entry name="ItemNum"  			type="uint32"	count="3" cname="商品数量"/>
+		<entry name="ItemNumProb"  		type="uint32"   count="3" cname="商品数量概率" />
+		<entry name="ItemPrice"	  		type="uint32"   count="3" cname="商品价格" />
+		<entry name="ItemPriceType"  	type="uint8"   	count="3" cname="商品价格类型" />
+		<entry name="IndexItemId"  		type="uint32"  	cname="索引物品Id" />
+		<entry name="ReplaceItemType"	type="uint8"  	cname="替换物品类型" />
+	</struct>
+
+	<struct name="ResBMarketUptPrice" version="1" desc="黑市付费刷新">
+		<entry name="Times"		type="uint32"	cname="Id" />
+		<entry name="Price"		type="uint32"   cname="刷新价格"	desc="钻石数" />
+	</struct>
+
+	<struct name="ResBMarketGeneralRule1" version="1" desc="黑市武将特殊规则1">
+		<entry name="Id"		type="uint32"	cname="Id" />
+		<entry name="Phase"		type="uint8"	cname="武将品阶"	desc="对应武将表" />
+		<entry name="Weight"	type="uint8"	cname="权重系数"	desc="范围0~100" />
+	</struct>
+	<struct name="ResBMarketGeneralRule2" version="1" desc="黑市武将特殊规则2">
+		<entry name="Id"		type="uint32"	cname="Id" />
+		<entry name="ArmyType"	type="uint8"	cname="兵种类型"	desc="对应兵种表" />
+		<entry name="Prob"		type="uint8"	cname="概率权重"	desc="范围0~5" />
+	</struct>
+
+	<struct name="ResBMarketEquipRule1" version="1" desc="黑市装备特殊规则1">
+		<entry name="Id"		type="uint32"	cname="Id" />
+		<entry name="Phase"		type="uint8"	cname="装备品阶"	desc="对应装备表" />
+		<entry name="Weight"	type="uint8"	cname="权重系数"	desc="范围0~100" />
+	</struct>
+	<struct name="ResBMarketEquipRule2" version="1" desc="黑市装备特殊规则2">
+		<entry name="Id"		type="uint32"	cname="Id" />
+		<entry name="EquipType"	type="uint8"	cname="装备类型"	desc="对应装备部位" />
+		<entry name="Prob"		type="uint8"	cname="概率权重"	desc="范围0~5" />
+	</struct>
+
+	<struct name="ResDebugCond" version="1" desc="黑市装备特殊规则2">
+		<entry name="Id"			type="uint32"	cname="Id" />
+		<entry name="MajestyLv"		type="uint8"	cname="主公等级" />
+		<entry name="GeneralPhase"	type="uint8"	cname="所有武将品阶" />
+		<entry name="GeneralStar"	type="uint8"	cname="所有武将星级" />
+		<entry name="GSkillLv"		type="uint8"	cname="所有武将技能等级" />
+		<entry name="GSkillStar"	type="uint8"	cname="技能秘籍星级" />
+		<entry name="PageLv"		type="uint8"	cname="装备页强化" />
+		<entry name="EquipStar"		type="uint8"	cname="所有默认装备星级" />
+		<entry name="EquipId"		type="uint32"	count="6"	cname="默认装备" />
+		<entry name="MSkillLv"		type="uint8"	cname="军师技等级" />
+	</struct>
+
+	<struct name="ResCoinShop" version="1" desc="代币商店">
+	    <entry name="Id"			    type="uint32"	cname="Id" />
+		<entry name="TypeId"		    type="uint8"	cname="类型ID" />
+		<entry name="Range"			    type="uint32"   cname="概率区间" />
+		<entry name="PropType"  	    type="uint32"   cname="物品类型" />
+		<entry name="PropId"  	        type="uint32"   cname="物品ID" />
+		<entry name="PropNum"    	    type="uint32"   cname="物品数量" />
+		<entry name="PropPriceType"  	type="uint32"   cname="价格类型" />
+		<entry name="PropPrice"  	    type="uint32"   cname="物品价格" />
+		<entry name="SlotLv"            type="uint16"   cname="开启等级" />
+		<entry name="ShopType"			type="uint8"	cname="商店编号" />
+	</struct>
+
+	<struct name="ResMailReward" version="1" desc="邮件奖励附件">
+		<entry name="Type"			type="uint8"	cname="[类型]" />
+		<entry name="Id"			type="uint32"	cname="[Id]" />
+		<entry name="Num"			type="uint32"	cname="[数量]" />
+		<entry name="LimitLowLv"	type="uint8"	cname="[等级条件下限]" />
+		<entry name="LimitHighLv"	type="uint8"	cname="[等级条件上限]" />
+	</struct>
+
+	<struct name="ResPubMail" version="1" desc="系统公共邮件">
+		<entry name="Id"				type="uint32"	cname="Id" />
+		<entry name="Title"				type="string"	size="RES_MAX_MAIL_TITLE_LEN"	cname="标题" />
+		<entry name="Content"			type="string"	size="RES_MAX_MAIL_CONTENT_LEN"	cname="内容" />
+		<entry name="StartTimeSec"		type="string"	size="RES_MAX_MAIL_TIME_LEN"	cname="开始时间" />
+		<entry name="EndTimeSec"		type="string"	size="RES_MAX_MAIL_TIME_LEN"	cname="结束时间" />
+		<entry name="AttachmentNum"		type="uint8"	cname="附件个数" />
+		<entry name="AttachmentList"	type="ResMailReward"	count="RES_MAX_MAIL_REWARD_NUM"		refer="AttachmentNum"	cname="[附件]" />
+	</struct>
+
+	<struct name="ResPriMail" version="1" desc="军团战邮件">
+		<entry name="Id"				type="uint32"			cname="Id" />
+		<entry name="Title"				type="string"			size="RES_MAX_MAIL_TITLE_LEN"		cname="标题" />
+		<entry name="Content"			type="string"			size="RES_MAX_MAIL_CONTENT_LEN"		cname="内容" />
+		<entry name="AttachmentNum"		type="uint8"			cname="附件个数" />
+		<entry name="AttachmentList"	type="ResMailReward"	count="RES_MAX_MAIL_REWARD_NUM"		refer="AttachmentNum"	cname="[附件]" />
+	</struct>
+
+	<struct name="ResActivityBonus" version="1" desc="活动激活码奖励">
+		<entry name="Id"				type="uint32"	cname="ID" />
+		<entry name="MailResId"			type="uint32"	cname="邮件ID" />
+	</struct>
+
+	<struct name="ResSerialNum" version="1" desc="激活码">
+		<entry name="Id"				type="uint32"	cname="ID" />
+		<entry name="ChannelId"			type="uint32"	cname="渠道ID" />
+        <entry name="DelFlag"			type="uint8"	cname="删除标志" />
+        <entry name="RepeatFlag"		type="uint8"	cname="批次重复领取" />
+        <entry name="RewardCnt"  		type="uint8"   	cname="奖励数量"	    desc="奖励物品个数"/>
+		<entry name="RewardType"  		type="uint8"	cname="[物品类型]"		desc="物品类型"   	   count="5" />
+		<entry name="RewardId"			type="uint32"   cname="[物品ID]"		desc="物品ID"          count="5" />
+		<entry name="RewardNum"		  	type="uint32"   cname="[物品数量]"		desc="物品数量"	       count="5" />
+        <entry name="EndTime"		    type="string"	cname="过期时间"        size="RES_MAX_MAIL_TIME_LEN" />
+	</struct>
+
+	<struct name="ResAffiche" version="1" desc="公告">
+		<entry name="Id"				type="uint32"	cname="ID" />
+		<entry name="Display"			type="uint8"	cname="是否显示" />
+		<entry name="Title"				type="string"	cname="公告标题" 		size="RES_MAX_AFFICHE_TITLE_LEN"/>
+		<entry name="Content"			type="string"	cname="公告内容" 		size="RES_MAX_AFFICHE_CONTENT_LEN"/>
+	</struct>
+
+	<struct name="ResAsyncPVPFakePlayer" version="1" desc="异步PVP假玩家">
+		<entry name="Id"				type="uint32"	cname="序列ID" />
+		<entry name="Name"				type="string"	cname="玩家名"			desc="玩家名"	size="RES_MAX_NAME_LEN"/>
+		<entry name="HeadIconId"		type="uint16" 	cname="头像图标Id"		desc="玩家头像图标Id"/>
+    	<entry name="HeadFrameId"		type="uint16" 	cname="头像图框Id"		desc="玩家头像图框Id"/>
+		<entry name="Level"				type="uint8"	cname="等级"			desc="等级"/>
+		<entry name="Li"				type="uint32"	cname="战力"			desc="战力"/>
+		<entry name="TroopNum"			type="uint8"	cname="部队数"			desc="部队数"/>
+		<entry name="TroopList"			type="uint32"	cname="[部队ID]" 		desc="部队ID"	count="6"	refer="TroopNum"/>
+	</struct>
+
+	<!-- 每日挑战 开始 -->
+
+	<struct name="ResDailyChallengeMatch"  version="1"  desc="每日挑战比赛信息">
+		<entry name="Id"				type="uint32"	    cname="Id" />
+		<entry name="ForceRatio"		type="float"	    cname="战力缩放系数"	desc="战力缩放系数"	/>
+		<entry name="ScoreRatio"		type="float"	    cname="胜利积分系数"	desc="胜利积分系数"	/>
+		<entry name="BattalArrayCount"	type="uint8"	    cname="阵容数量"	    desc="阵容数量"	/>
+		<entry name="BattalArrayList"	type="uint32"	    cname="[阵容Id]"	    count="10"	      desc="阵容id列表"	/>
+	</struct>
+
+	<struct name="ResDailyChallengeBattleArray"  version="1"  desc="每日挑战阵容">
+		<entry name="Id"				type="uint32"	    cname="Id" />
+		<entry name="BattleArray"		type="uint32"	    cname="[武将池Id]"	count="RES_MAX_TROOP_COUNT"	desc="武将池Id列表"	/>
+	</struct>
+
+	<struct name="ResDailyChallengeGeneralPool"  version="1"  desc="每日挑战武将池">
+		<entry name="Id"				type="uint32"	    cname="Id" />
+		<entry name="GeneralCount"		type="uint8"	    cname="武将数量" />
+		<entry name="GeneralList"		type="uint32"	    cname="[武将Id]"	count="10"	desc="武将Id列表"	/>
+	</struct>
+
+	<struct name="ResDailyChallengeArmyForce"  version="1"  desc="每日挑战兵种战力映射属性规则">
+		<entry name="Id"				type="uint32"	    cname="Id" />
+		<entry name="AttributeList"		type="float"	    cname="[属性]"	count="5"	desc="属性列表"	/>
+	</struct>
+
+	<!-- 每日挑战 结束 -->
+
+	<!-- 克隆武将 开始 -->
+
+	<struct name="ResCloneBattlePool"  version="1"  desc="克隆武将活动 武将池">
+		<entry name="Id"				type="uint32"	    cname="Id" desc="9999为活动奖池id"/>
+		<entry name="GeneralCount"		type="uint8"	    cname="武将数量" />
+		<entry name="GeneralList"		type="uint32"	    cname="[武将Id]"	count="10"	desc="武将Id列表"	/>
+	</struct>
+
+	<struct name="ResCloneBattleFightReward"  version="1"  desc="克隆武将活动 战斗奖励">
+		<entry name="Id"				type="uint32"	    cname="Id" 		desc="使用武将id作为id"/>
+		<entry name="PoolList"			type="uint32"	    cname="[奖池]"	count="2"	desc="奖励物品随机池"	/>
+	</struct>
+
+	<!-- 克隆武将 结束 -->
+
+	<!--
+		结构体定义 end
+	-->
+
+</metalib>

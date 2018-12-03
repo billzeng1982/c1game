@@ -1,0 +1,63 @@
+--[[
+名称：治军整顿
+类型：星级被动Buff
+描述：本方部队物防、法防+4%
+--]]
+local ThisScriptId = 5732;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	--local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * 0.04;
+	--local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * 0.04;		
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * 0.04;
+	local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * 0.04;	
+	--LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,AddStrAtk);
+	--LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,AddWitAtk);	
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT,AddStrDef);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT,AddWitDef);
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	
+	--local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * 0.04;
+	--local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * 0.04;		
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * 0.04;
+	local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * 0.04;	
+	--LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT,-AddStrAtk);
+	--LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,-AddWitAtk);	
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT,-AddStrDef);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT,-AddWitDef);
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_5732 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

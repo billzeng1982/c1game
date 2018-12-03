@@ -1,0 +1,99 @@
+--[[
+名称：600号特效用空buff
+类型：
+描述：600号特效用空buff
+--]]
+local ThisScriptId = 603;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--buff时间设置
+	local armyPhase = LuaDataAgt:GetArmyPhase();
+	local LifeTime = 5;
+	if armyPhase == 3 then
+		LifeTime = 7;
+	end
+	
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, LifeTime);
+	LuaDataAgt:SetFilter(FILTER_TYPE.COND, TARGET_GROUP.NONE, 0);
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	local targetList;
+	LuaDataAgt:ClearTarget();
+
+	targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.FAN, 0, 0, 20, 90)
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	if not IsOnServer then
+		--设置狂暴进度条
+		local LifeTimeConf = LuaDataAgt:GetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF);
+		local LifeTimeLeft = LuaDataAgt:GetBuffLifeTime(VALUE_TYPE.CURRENT);
+		
+		LuaDataAgt:SetSpearProgress(true ,LifeTimeLeft / LifeTimeConf ,1);
+	end
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--去掉狂暴进度条
+	if not IsOnServer then
+		LuaDataAgt:SetSpearProgress(false ,0 ,1);
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	local source = LuaDataAgt:GetBuffSource();
+	local armyPhase = LuaDataAgt:GetArmyPhase();
+	
+	
+	
+	
+	
+	for i = 0 , targetList.Count - 1 do
+		targetList:get_Item(i):ChgHp(VALUE_TYPE.CURRENT, 0, source, VALUE_CHG_TYPE.CHG_HP_PASSIVESKILL, 5003);
+		print("hit");
+	end
+end
+
+ --Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.COND then
+		if IsSource then
+			--不能使能兵种技能，不能释放武将技能
+			if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_COND_ARMYSKILL then
+				FilterValue.m_fFoo1 = 0;
+			end
+		end
+	end
+	return FilterValue;
+end
+
+
+
+Buff_603 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_findTarget = findTarget;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFilter = doFilter;	
+}

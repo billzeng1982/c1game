@@ -1,0 +1,76 @@
+--[[
+名称：战斗力BUFF1
+类型：90%削弱
+描述：削弱自身为90%
+--]]
+local ThisScriptId = 12003;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--属性加减,Ratio是调整的倍数
+	local Ratio = 1;
+	local StrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * (Ratio - 1);
+	local WitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * (Ratio - 1);
+	local StrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * (Ratio - 1);
+	local WitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * (Ratio - 1);
+	
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, StrAtk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT, WitAtk);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, StrDef);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, WitDef);
+	
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+end
+
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--属性加减,Ratio是调整的倍数
+	local Ratio = 1;
+	local StrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * (Ratio - 1);
+	local WitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * (Ratio - 1);
+	local StrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * (Ratio - 1);
+	local WitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * (Ratio - 1);
+	
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -StrAtk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT, -WitAtk);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -StrDef);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, -WitDef);
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+
+	return FilterValue;
+end
+
+Buff_12003 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+	func_doFilter = doFilter;
+}

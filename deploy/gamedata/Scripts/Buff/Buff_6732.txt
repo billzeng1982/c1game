@@ -1,0 +1,68 @@
+--[[
+名称：内外节俭
+类型：被动技能
+描述：减少友军所有武将受到的技能伤害
+--]]
+local ThisScriptId = 6732;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+
+	--取被动技参数
+	
+	--InSkill = 0.99;
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	if iFilterType == FILTER_TYPE.HP and FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_GENERALSKILL then
+		local iHp = FilterValue.m_fFoo1;
+		if iHp < 0 and not IsSource then
+		    local rsource = LuaDataAgt:GetBuffSource();
+			local InSkill = rsource:GetPassiveSkillBaseValue(ThisScriptId, 1) / 100;
+
+			FilterValue.m_fFoo1 = iHp * (1 - InSkill);
+		end
+	end
+	
+	return FilterValue;
+end
+
+Buff_6732 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFilter = doFilter;
+}

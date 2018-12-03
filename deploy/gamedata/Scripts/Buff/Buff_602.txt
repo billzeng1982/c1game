@@ -1,0 +1,84 @@
+--[[
+名称：伏兵伤害加深
+类型：兵种技能Buff
+名称：伏兵伤害加深
+--]]
+local ThisScriptId = 602;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--buff时间设置
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 5);
+	
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, -4);
+	
+	LuaDataAgt:SetShareTimer(1,0);
+	if not IsOnServer then
+		
+	end
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	--伏兵状态下释放技能1.5倍伤害
+	if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_GENERALSKILL and IsSource then
+		if FilterValue.m_fFoo1 < 0 then
+			local iHp = FilterValue.m_fFoo1;
+			FilterValue.m_fFoo1 = iHp * 1.1;
+			local iTime = LuaDataAgt:GetShareTimer(1); 
+			if not IsOnServer and iTime < 0 then
+				local OffSet = LuaDataAgt:GetCurPos();
+				LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_ShangHaiQiangHua", LuaDataAgt, OffSet, OffSet, 0, true); -- 延迟0播该特效
+				LuaDataAgt:SetShareTimer(1,8);
+			end
+		end
+	end
+	
+	return FilterValue;
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+
+	return 0;
+end
+
+Buff_602 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_findTarget = findTarget;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFilter = doFilter;
+	func_doFormula = doFormula;
+}

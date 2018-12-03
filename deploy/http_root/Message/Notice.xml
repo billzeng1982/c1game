@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Root>
+	<Message Id="1">
+	    <Title content="临时维护"  tabPic="a"/>
+        <Content content="&#x000A;尊敬的主公：&#x000A;您好！&#x000A;本次临时维护已完成，主公可正常登入进行游戏。&#x000A;感谢主公一直以来对《乱斗三国》的支持！&#x000A;《乱斗三国》全员敬上&#x000A;2018年1月18日"  subTitle="临时维护公告"/>
+    </Message>
+	<Message Id="2">     
+        <Title content="维护公告"  tabPic="a"/>
+        <Content content="&#x000A;尊敬的主公：&#x000A;您好！&#x000A;《乱斗三国》本次维护已完成，主公可正常登入进行游戏。&#x000A;&#x003C;color=#14d32e>更新以下内容：&#x003C;/color>&#x000A;1.坐骑饰品80-90级升级经验异常问题。&#x000A;&#x000A;2.修改武将重生钻石消耗错误的BUG。&#x000A;&#x000A;3.觉醒专武商店：14专武改为马超。&#x000A;&#x000A;4.武将缘分加成配置修正。&#x000A;&#x000A;维护期间给您带来的不便，我们深表歉意。&#x000A;感谢主公一直以来对《乱斗三国》的支持！&#x000A;《乱斗三国》全员敬上&#x000A;2018年1月17日"  subTitle="日常维护公告"/>
+    </Message>
+	<Message Id="3">
+        <Title content="开服公告"  tabPic="a"/>
+        <Content content="&#x000A;尊敬的主公：&#x000A;您好！&#x000A;《乱斗三国》最新服务器——&#x003C;color=#14d32e>10服“制衡天下”&#x003C;/color>已开启！&#x000A;主公可在登录后选择新服进行游戏！&#x000A;开服时间：&#x003C;color=#14d32e>2017年12月29日10：00&#x003C;/color>&#x000A;乱世纵横，策略称雄！与您携手开创三国传奇！&#x000A;感谢主公一直以来对《乱斗三国》的支持！祝您新年快乐！&#x000A;《乱斗三国》全员敬上&#x000A;2017年12月29日"  subTitle="新服开启公告"/>
+    </Message>
+	<Message Id="4">
+        <Title content="首充大奖"  tabPic="b"/>
+        <Content content="&#x000A;首充有福利！“古灵精怪”小乔，秒天秒地！&#x000A;【活动时间】永久&#x000A;【活动内容】首充大奖携充值返利，开心送不停！测试期间，玩家首次充值任意金额，可获得内容丰富超划算首充大礼包一个，更能获得武将“最强范围法伤，群秒专家”——古灵精怪·小乔。" subTitle="首充大礼相送"/>
+    </Message>
+	<Message Id="5">
+        <Title content="招募有奖"  tabPic="b"/>
+        <Content content="&#x000A;招募送典韦，福利领不停！&#x000A;【活动时间】主公注册后1~2天&#x000A;【活动内容】累积钻石招募次数，每满10次，会赠送一定数量的强武将——古之恶来·典韦碎片，礼包中附带多种高级材料、金币等物品，招募次数越多，奖励越丰厚，物超所值。" subTitle="累积招募赠送"/>
+    </Message>
+    <Message Id="6">
+        <Title content="联系我们"  tabPic="b"/>
+        <Content content="&#x000A;联系我们：&#x000A;Facebook地址：&#x000A;https://www.facebook.com/luandousanguo &#x000A;Support Email：&#x000A; service@amzgame.com &#x000A;服务时间：&#x000A;周一至周五 9：30-18：30&#x000A;官方微信号：AMZGameOfficial&#x000A;欢迎到官方粉丝团分享您的想法~" subTitle="联系我们"/>
+    </Message>
+</Root>

@@ -1,0 +1,54 @@
+--[[
+名称：枪兵枪头
+类型：兵种技能Buff
+描述：刷刷刷刷枪
+--]]
+local ThisScriptId = 9996;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	--使能枪头
+	if not IsOnServer then
+		LuaDataAgt:SetArmySkillEnable(true);
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	--枪头取消
+	if not IsOnServer then
+		LuaDataAgt:SetArmySkillEnable(false);
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	
+end
+
+Buff_9996 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFormula = doFormula;
+}

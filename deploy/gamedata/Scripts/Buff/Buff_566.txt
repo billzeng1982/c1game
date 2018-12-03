@@ -1,0 +1,68 @@
+--[[
+名称:有条不紊
+类型:被动技能
+描述:鲁肃每次成功施法后增加友方物防或法防(此被动技能为空，技能效果写在同idbuff里，触发写在鲁肃主动技中id73) 物防buff
+--]]
+local ThisScriptId = 566;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	print("successful");
+	local Source = LuaDataAgt:GetBuffSource();
+
+	--属性加减
+	local iRatio = Source:GetActiveSkillBaseValue(2) / 100;
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * iRatio;
+	local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * iRatio;
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, AddStrDef);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, AddWitDef);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+
+		local TarPos = LuaDataAgt:GetCurPos();
+		--LuaDataAgt:Play2DFXFollowTroopInfo("Prefabs/BasicEffect/UI_CharEff_WuFangShangSheng", 2 , TarPos);
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_WuFangShangSheng", LuaDataAgt, TarPos, TarPos, 0.5, true);
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_FaFangShangSheng", LuaDataAgt, TarPos, TarPos, 1.5, true);
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local Source = LuaDataAgt:GetBuffSource();
+
+	--属性加减
+	local iRatio = Source:GetActiveSkillBaseValue(2) / 100;
+	local AddStrDef = LuaDataAgt:GetStrDef(VALUE_TYPE.ORIGIN_CONF) * iRatio;
+	local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * iRatio;
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -AddStrDef);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, -AddWitDef);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_566 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

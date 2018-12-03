@@ -1,0 +1,119 @@
+--[[
+名称：一骑当千
+类型：觉醒主动技能
+描述：冲击波另加自身暴击
+--]]
+local ThisScriptId = 2070;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_SKILLCHEATS, ThisScriptId, 0);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	--扇形 25是半径 90是张角
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(1) then                   --秘籍1：范围增大
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 27.5, 20 * 1.05, 55 * 1.05);
+	    LuaDataAgt:MapDrawRectangle(0, 20 * 1.05, 130 * 1.05, 0, 0);
+	else
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 27.5, 20, 55);
+	    LuaDataAgt:MapDrawRectangle(0, 20, 130, 0, 0);
+	end
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+	--AI操作需要至少命中n人，玩家操作无要求
+	if (AIId == 0) then
+
+	else
+		if targetList.Count > 0 then
+			return true;
+		else
+			return false;
+		end
+	end
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(1) then                   --秘籍1：范围增大
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 27.5, 20 * 1.05, 55 * 1.05);
+	else
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.RECT, 0, 27.5, 20, 55);
+	end
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	for i = 0,targetList.Count -1 do
+		local target = targetList:get_Item(i);
+		-- 伤害
+		target:ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+		--沉默
+		target:AddBuff(568, LuaDataAgt, nil);
+		--[[
+		k =  target:GetStrAtk(VALUE_TYPE.CURRENT);
+		math.randomseed(tostring(os.time() + k):reverse():sub(1, 6)) ;
+		local j = math.random(1,100);
+		if j < 21 then
+		    target:AddBuff(ThisScriptId, LuaDataAgt, nil);
+			target:PlayFX("Prefabs/BasicEffect/3D_CharEff_WuGongXiaJiang", target, Vector3.zero, Vector3.zero, 0.5, true);
+		end
+		]]--
+	end
+	LuaDataAgt:AddBuff(2070, LuaDataAgt, nil);
+	LuaDataAgt:InterruptSiege();
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = iDamageRef;
+
+	local StrAtk = rSource:GetStrAtk(VALUE_TYPE.CURRENT);
+	local StrDef = rTarget:GetStrDef(VALUE_TYPE.CURRENT);
+	local Base = rSource:GetActiveSkillBaseValue(1);
+	local MinDmg = Base;
+	local Ratio = rSource:GetActiveSkillRateValue(1);
+	
+	iRet = Base + (StrAtk - StrDef) * Ratio;
+	iRet = math.max(iRet,MinDmg);
+	
+	local MaxHp = rTarget:GetHp(VALUE_TYPE.RUNTIME_CONF);
+	--额外伤害
+	local DamgeRatio = rSource:GetActiveSkillBaseValue(2);
+	local ExtraDamge = MaxHp * DamgeRatio / 100;
+
+	--额外伤害保护
+	local ExtraDamge = math.max(ExtraDamge, 0);
+	local ExtraDamge = math.min(ExtraDamge,  iRet);
+	--之前已做保护
+	iRet = iRet + ExtraDamge;
+	
+	return -iRet;
+end
+
+
+GeneralSkill_2070 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	func_doFormula = doFormula;
+
+}

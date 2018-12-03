@@ -1,0 +1,63 @@
+--[[
+名称：回复之阵
+类型：军师技Buff
+描述：回复之阵
+--]]
+local ThisScriptId = 1100;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置Buff公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	if not LuaDataAgt:IsDead() then
+	    --给非死亡部队回血
+		LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+	end
+end
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+	
+	local curLevel = LuaDataAgt:GetMSLevel4Buff();  	-- 获得等级
+	local curProgress = LuaDataAgt:GetMSProgress4Buff();	-- 获得进度
+	local curAddRatio = LuaDataAgt:GetMSAddRatioPower4Buff();	-- 获得效果增益
+	local maxValue = 5;
+	local minValue = 2;
+	
+	local Hp = rTarget:GetHp(VALUE_TYPE.RUNTIME_CONF);
+	
+	--计算公式
+	local addValue = maxValue;
+	iRet = Hp * addValue * curAddRatio / 100;
+	
+	return iRet;
+end
+
+Buff_1100 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFormula = doFormula;
+}

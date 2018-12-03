@@ -1,0 +1,75 @@
+--[[
+名称：喝断黄河
+类型：武将技能Buff
+描述：减防
+--]]
+local ThisScriptId = 537;
+ 
+ --Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--buff时间设置
+	local witdef = LuaDataAgt:GetWitDef(VALUE_TYPE.CURRENT);
+	local witatk = source:GetWitAtk(VALUE_TYPE.CURRENT);	
+	local itime = source:GetActiveSkillBaseValue(3);
+	local itimeRatio = source:GetActiveSkillRateValue(3);	
+	itimeMax = itime * 1.2;
+	itimeMin = itime * 0.8;
+	itime = itime + (witatk - witdef) * itimeRatio;
+	itime = math.max (itimeMin,math.min (itimeMax,itime) );
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+	
+	--属性加减
+	local def = source:GetActiveSkillAdditionValue(2);
+    LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -def);
+	
+	--local speedRatio = 1 - source:GetActiveSkillAdditionValue(1)/100;
+	--LuaDataAgt:ChgSpeedByRatio(-speedRatio);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+ local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--属性加减
+	local def = source:GetActiveSkillAdditionValue(2);
+    LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, def);
+	
+	--local speedRatio = 1 - source:GetActiveSkillAdditionValue(1)/100;
+	--LuaDataAgt:ChgSpeedByRatio(speedRatio);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+	
+ --Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end	
+
+ -- Buff生效
+ local function takeEffect(LuaDataAgt)
+	 
+ end 
+
+
+Buff_537 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+}

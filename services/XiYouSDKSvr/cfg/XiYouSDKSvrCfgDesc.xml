@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="GBK" standalone="yes" ?>
+
+<metalib tagsetversion="1" name="XiYouSDKSvrCfg" version="1" >
+	<struct name="XiYouSDKSvrCfg" version="1" desc="主配置结构">
+		<entry name="ProcIDStr" 	    type="string"   size="20" />
+		<entry name="ProcID"		    type="int"      defaultvalue="0"/>
+		<entry name="ZoneSvrIDStr" 	    type="string"   size="20" />
+		<entry name="ZoneSvrID"		    type="int"      defaultvalue="0"/>
+		<entry name="BusGCIMKey"	    type="int" />
+		<entry name="SvrId"	    		type="int" />
+		<entry name="RegInterval"	    type="uint32" />
+
+		<entry name="AppSecret" 	    type="string"   size="128" />
+
+        <entry name="XiyouAccountLoginUrl" 		type="string"   size="128" />
+        <entry name="XiyouGetOrderIdUrl" 		type="string"   size="128" />
+        <entry name="CommonAccountLoginUrl" 	type="string"   size="128" />
+        <entry name="CommonGetOrderIdUrl" 		type="string"   size="128" />
+        <entry name="ClusterCbSvrUrl"   		type="string"   size="128" />
+
+        <entry name="HttpSvrPort" 	    type="int"   	defaultvalue="80" />
+		<entry name="PayCallBackUri" 	type="string"   size="128"/>
+		<entry name="SvrIpStr" 			type="string"   size="128"/>
+
+		<entry name="ClientThreadNum" 	type="int" 		defaultvalue="10" 	desc="HttpClient的工作线程数量"/>
+		<entry name="ServerThreadNum" 	type="int" 		defaultvalue="1" 	desc="HttpServer的工作线程数量"/>
+
+		<entry name="ThreadQBaseShmKey" type="int" 		defaultvalue="0" />
+		<entry name="ThreadQSize" 		type="uint32"	desc="主从线程间通信管道大小" />
+	</struct>
+</metalib>
+

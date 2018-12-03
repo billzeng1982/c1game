@@ -1,0 +1,42 @@
+--[[
+名称：军师
+类型：兵种被动Buff
+描述：伏兵状态现身后加速50%，持续5秒
+--]]
+local ThisScriptId = 9004;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 5);
+	LuaDataAgt:ChgSpeedByRatio(1.5);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	LuaDataAgt:ChgSpeedByRatio(-1.5);
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_9004 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

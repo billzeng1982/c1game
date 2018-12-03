@@ -1,0 +1,66 @@
+--[[
+名称：百骑劫营
+类型：主动技能
+描述：甘宁奇袭敌军，使周围的敌军受到惊吓，大量减速，并且不能使用兵种技。
+--]]
+local ThisScriptId = 10032;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	LuaDataAgt:ClearTarget();
+	--没有技能框 清除其它技能框
+	LuaDataAgt:ClearSkillRange();
+	--找敌方部队
+	local targetList;
+	targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 35, 0);
+	LuaDataAgt:MapDrawCircle(0,35);
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);		 
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+	--圆形判断框
+	
+	--小地图技能目标提示标志
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+	if targetList.Count > 0 then
+	   return true;
+	end
+	return false;
+	
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	--找我方部队
+	local targetList;
+    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 35, 0);
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	for i=0,targetList.Count-1 do
+		targetList:get_Item(i):AddBuff(11, LuaDataAgt, nil);
+	end
+	
+	LuaDataAgt:InterruptSiege();
+end
+
+GeneralSkill_10032 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+}

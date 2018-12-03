@@ -1,0 +1,83 @@
+--[[
+名称：夺命封喉
+类型：主动技能
+描述：祝融扔出毒镖，使前方范围内敌军中毒。
+--]]
+local ThisScriptId = 42;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	--找敌方部队
+	local targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 20, 10, 0);
+
+	--没有技能框 清除其它技能框
+	LuaDataAgt:MapDrawCircle(20,10);
+
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	--找敌方部队
+	local targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 20, 10, 0);
+
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+end
+
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+
+	for i=0,targetList.Count-1 do
+		local target = targetList:get_Item(i);
+		--减血
+		target:ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt,VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+		--加buff
+		target:AddBuff(42, LuaDataAgt, targetList);
+
+		local TarPos = target:GetCurPos();
+		target:PlayFX("Prefabs/BasicEffect/3D_CharEff_ZhongDu", target, TarPos, TarPos, 0, true); -- 延迟0播该特效
+	end
+
+	LuaDataAgt:InterruptSiege();
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = 0;
+
+	local ap = rSource:GetWitAtk(VALUE_TYPE.CURRENT);
+	local def = rTarget:GetWitDef(VALUE_TYPE.CURRENT);
+	iRet = -(400 + ap * 5) * (1 - def / (def + 60));
+
+	return iRet;
+end
+
+GeneralSkill_42 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+
+	func_doFormula = doFormula;
+}

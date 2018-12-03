@@ -1,0 +1,63 @@
+--[[
+名称：战场buff--回血
+类型：战场buff
+描述：触碰以后直接回血
+--]]
+local ThisScriptId = 10001;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+
+
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	if not IsOnServer then
+		LuaDataAgt:ClearTarget();
+		local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.SELF);
+		LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+		for i = 0 , targetList.Count-1 do
+			local target = targetList:get_Item(i);
+			local ChgValue = target:GetHp(VALUE_TYPE.RUNTIME_CONF) * 0.04;
+			target:ChgHp(VALUE_TYPE.CURRENT, ChgValue, target, VALUE_CHG_TYPE.CHG_HP_COMM, 0, 221);
+			local currPos = target:GetCurPos();
+			target:PlayFX("Prefabs/BuffEffect/Buff_JiaXue", target, currPos, currPos, 0, true);
+			target:PlayFX("Prefabs/BuffEffect/Master_Yuanjun", target, currPos, currPos, 0.3, true);
+		end
+	end
+
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+
+end
+
+Buff_10001 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+	func_doFilter = doFilter;
+}

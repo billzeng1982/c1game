@@ -1,0 +1,82 @@
+--[[
+名称：贤良淑德
+类型：被动技能
+描述: 免疫控制
+<color=#f3bb25>免疫控制率： {1}%</color>"
+--]]
+local ThisScriptId = 13019;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	source = LuaDataAgt:GetBuffSource();
+	
+	local itime = source:GetActiveSkillBaseValue(2);
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+	
+	if not IsOnServer then
+		LuaDataAgt:DelBuff(0, BUFF_TYPE.BUFF_TYPE_ATTR_LOSS, LuaDataAgt);
+		LuaDataAgt:DelBuff(0, BUFF_TYPE.BUFF_TYPE_SPEED_LOSS, LuaDataAgt);
+		LuaDataAgt:DelBuff(0, BUFF_TYPE.BUFF_TYPE_FAINT, LuaDataAgt);
+		LuaDataAgt:DelBuff(0, BUFF_TYPE.BUFF_TYPE_RESTRAIN, LuaDataAgt);
+		LuaDataAgt:DelBuff(0, BUFF_TYPE.BUFF_TYPE_SCOFF, LuaDataAgt);
+	end
+	
+	LuaDataAgt:SetFilter(FILTER_TYPE.TRIG, TARGET_GROUP.NONE, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+
+	if iFilterType == FILTER_TYPE.TRIG  then
+		--受到敌人的技能控制
+		if not IsOnServer and not IsSource and FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_TRIG_BUFF_ADD_END then
+			local iBuffType = BUFF_TYPE.IntToEnum(FilterValue.m_fFoo2);
+			if (iBuffType == BUFF_TYPE.BUFF_TYPE_SPEED_LOSS or
+				iBuffType == BUFF_TYPE.BUFF_TYPE_FAINT or
+				iBuffType == BUFF_TYPE.BUFF_TYPE_RESTRAIN or
+				iBuffType == BUFF_TYPE.BUFF_TYPE_SCOFF) then
+
+				FilterValue.m_fFoo1 = 0;
+			end
+		end
+	end
+
+	return FilterValue;
+end
+
+
+Buff_13019 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+	func_doFilter = doFilter;
+}

@@ -1,0 +1,109 @@
+--[[
+名称：伏兵
+类型：固有被动Buff
+描述：开场隐身，对第一个碰到的敌人造成大量伤害
+--]]
+local ThisScriptId = 9902;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local RefreshTime = 15;
+	local armyPhase = LuaDataAgt:GetArmyPhase();
+	--三阶伏兵刷新时间改为10秒
+	if armyPhase == 3 then
+		RefreshTime = 10;
+	end
+	
+	if not IsOnServer then
+		LuaDataAgt:SetShareTimer(0, RefreshTime);
+	end
+	
+	--伏兵监听事件
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 0);
+	LuaDataAgt:SetFilter(FILTER_TYPE.COND, TARGET_GROUP.NONE, 0);
+	LuaDataAgt:SetFilter(FILTER_TYPE.TRIG, TARGET_GROUP.NONE, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--重新加上伏兵buff
+	LuaDataAgt:AddBuff(5001, LuaDataAgt, nil);
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	local shareTimer = LuaDataAgt:GetShareTimer(0);
+	if shareTimer <= 0 then
+		LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+	end
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local rSource = FilterValue:GetSource();
+	local IsSource = rFilterOwner:Equal(rSource);
+	local RefreshTime = 15;
+	local armyPhase = LuaDataAgt:GetArmyPhase();
+	--三阶伏兵刷新时间改为10秒
+	if armyPhase == 3 then
+		RefreshTime = 10;
+	end
+	if iFilterType == FILTER_TYPE.HP and not IsSource then
+		-- 受伤重置时间
+		if not IsOnServer then
+			-- 客户端处理方式
+			local iHp = FilterValue.m_fFoo1;
+			if iHp < 0 then
+				LuaDataAgt:SetShareTimer(0, RefreshTime);
+			end
+		else
+			-- 服务器处理方式
+			
+		end
+	end
+	--[[
+	if iFilterType == FILTER_TYPE.HP and IsSource then	
+		-- 打人重置时间
+		if not IsOnServer then
+			-- 客户端处理方式
+			local iHp = FilterValue.m_fFoo1;
+			if iHp < 0 then
+				LuaDataAgt:SetShareTimer(0, RefreshTime);
+			end
+		else
+			-- 服务器处理方式
+			
+		end
+	end
+]]
+	
+	if iFilterType == FILTER_TYPE.TRIG and IsSource then
+		-- 放技能重置时间
+		if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_TRIG_GENERALSKILL then
+			LuaDataAgt:SetShareTimer(0, RefreshTime);
+		end
+	end
+	
+	return FilterValue;
+end
+
+Buff_9902 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

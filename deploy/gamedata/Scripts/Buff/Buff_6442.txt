@@ -1,0 +1,62 @@
+--[[
+名称:三国无双
+类型:被动技能
+描述:（翻倍buffid13009）增加自身伤害，减少自身受到的伤害，如果友方武将势力包含4个势力则效果翻倍
+--]]
+local ThisScriptId = 6442; 
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local rSource = LuaDataAgt:GetBuffSource();
+	
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 999);
+	
+	--属性加减
+	local CriticalChance = rSource:GetPassiveSkillBaseValue(ThisScriptId, 1) * 10;
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL, CriticalChance);
+	
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+		
+		local TarPos = LuaDataAgt:GetCurPos();
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_BaoJiShangSheng", LuaDataAgt, TarPos, TarPos, 2.5, true);
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local rSource = LuaDataAgt:GetBuffSource();
+	
+	--属性加减
+	local CriticalChance = rSource:GetPassiveSkillBaseValue(ThisScriptId, 1) * 10;
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL, -CriticalChance);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_6442 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

@@ -1,0 +1,54 @@
+--[[
+名称：蛇蟠阵方士buff
+类型：方士阵法
+描述：每5秒回一次血
+--]]
+local ThisScriptId = 50033;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+
+-- 设置Buff公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+
+end
+
+--Buff驱散条件判断
+ local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+end
+
+ --Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+-- Buff生效
+local function takeEffect(LuaDataAgt)
+
+	LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 221);
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	
+	local HpAdd = LuaDataAgt:GetHp(VALUE_TYPE.RUNTIME_CONF) * LuaDataAgt:GetResTacticsBuffValue(ThisScriptId);
+	--local HpAdd = LuaDataAgt:GetHp(VALUE_TYPE.RUNTIME_CONF) * 1;
+	local iRet = HpAdd;
+	return iRet;
+	
+end
+
+Buff_50033 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFormula = doFormula;
+}

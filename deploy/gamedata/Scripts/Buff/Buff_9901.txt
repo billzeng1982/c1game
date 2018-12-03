@@ -1,0 +1,75 @@
+--[[
+名称：后退停止
+类型：撞击障碍Buff
+描述：每次撞击障碍，后退一定距离，停止0.5秒
+--]]
+local ThisScriptId = 9901;
+ 
+ --Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--设置过滤器
+	LuaDataAgt:SetFilter(FILTER_TYPE.POS, TARGET_GROUP.NONE, -3);
+	
+	--后退一定距离，不取消索敌
+	if not IsOnServer then
+		local currForwardNor = LuaDataAgt:GetCurForward(true);
+		local currPos = LuaDataAgt:GetCurPos();
+		local destPos = currPos - currForwardNor * 3;
+		LuaDataAgt:SetCurPos(destPos, false);
+	end
+	
+	--设置Buff时间
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 0.5);
+end
+
+--Buff驱散条件判断
+ local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	-- 恢复移动，不取消索敌
+	if not IsOnServer then
+		local destPosReal = LuaDataAgt:GetDestPos(true);
+		LuaDataAgt:MoveToDest(destPosReal, false);
+	end
+	
+end
+	
+ --Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end	
+
+ -- Buff生效
+ local function takeEffect(LuaDataAgt)
+	
+ end 
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.POS then
+		--不能变位置
+		local currPos = LuaDataAgt:GetCurPos();
+		FilterValue.m_fFoo1 = currPos.x;
+		FilterValue.m_fFoo2 = currPos.y;
+		FilterValue.m_fFoo3 = currPos.z;
+	end
+ 	
+	return FilterValue;
+end
+
+Buff_9901 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+}

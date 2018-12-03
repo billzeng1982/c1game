@@ -1,0 +1,56 @@
+--[[
+名称：乱世武道
+类型：星级被动Buff
+描述：本方其他部队物攻、法攻+8
+--]]
+local ThisScriptId = 5623;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	local IsSelf = LuaDataAgt:Equal(LuaDataAgt:GetBuffSource());
+	if not IsSelf then
+		LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, 8);
+		LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, 8);
+	end
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	local IsSelf = LuaDataAgt:Equal(LuaDataAgt:GetBuffSource());
+	if not IsSelf then
+		LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -8);
+		LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -8);
+	end
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_5623 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

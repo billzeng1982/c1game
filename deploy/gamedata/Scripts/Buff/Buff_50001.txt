@@ -1,0 +1,57 @@
+--[[
+名称：天覆阵
+类型：策士阵法
+描述：增加法攻
+--]]
+local ThisScriptId = 50001;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	
+	local witAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF);
+	print("1111111111111111111111-----"..witAtk);
+	local witAtkChgValue = witAtk * LuaDataAgt:GetResTacticsBuffValue(ThisScriptId);
+	LuaDataAgt:SetShareValue(0, witAtkChgValue);
+	
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+    
+	local witAtkClear =  LuaDataAgt:GetShareValue(0);
+    LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,-witAtkClear); 
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+    local witAktAdd =  LuaDataAgt:GetShareValue(0);
+    LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT,witAktAdd);
+	print("2222222222222222222-----"..witAktAdd);
+	
+	local TarPos = LuaDataAgt:GetCurPos();
+	LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_FaGongShangSheng", LuaDataAgt, TarPos, TarPos, 6, true); -- 延迟0播该特效
+	print("a a a a a a a a a a a a a a a a"..LuaDataAgt:GetShareValue(0));
+
+end
+
+
+Buff_50001 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

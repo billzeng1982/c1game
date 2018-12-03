@@ -1,0 +1,77 @@
+--[[
+名称：东山再起
+类型：主动技能
+描述：10秒内死亡，复活时间-60s
+--]]
+local ThisScriptId = 57;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+
+	local itime = LuaDataAgt:GetActiveSkillAdditionValue(1);									--BUFF时间
+	if source:IsHaveActiveSkillCheats(1) then     --秘籍1：增加时长
+	    itime = itime * 1.1;
+	end
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+
+	--设置死亡过滤
+	LuaDataAgt:SetFilter(FILTER_TYPE.TRIG, TARGET_GROUP.NONE, 0);
+end
+
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+
+	if iFilterType == FILTER_TYPE.TRIG then
+		if FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_TRIG_TROOP_DEAD_DONE then
+			-- 立马复活在远处
+			local revivePos = Vector3(200, 0, 200);
+			LuaDataAgt:ReviveTroopAtPos(revivePos);
+			LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+
+			-- 给对象加一个归位Buff
+			LuaDataAgt:AddBuff(546, LuaDataAgt, nil);
+			LuaDataAgt:AddBuff(591, LuaDataAgt, nil);
+			--归位Buff做如下事
+			--LuaDataAgt:SetCurPos(LuaDataAgt:GetDeadPos(), true);
+
+			-- 生效一次，删除本Buff
+			LuaDataAgt:DelBuff(ThisScriptId, BUFF_TYPE.BUFF_TYPE_NONE, LuaDataAgt);
+		end
+	end
+
+	return FilterValue;
+end
+
+Buff_57 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	func_doFilter = doFilter;
+}

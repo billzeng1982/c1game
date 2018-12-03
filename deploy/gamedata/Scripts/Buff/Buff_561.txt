@@ -1,0 +1,60 @@
+--[[
+名称：庞统觉醒大招buff
+类型：被动技能
+描述：降法防
+--]]
+local ThisScriptId = 561;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	local Ratio = 0.3;
+	local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * Ratio;
+	
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, -AddWitDef);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+		
+		local TarPos = LuaDataAgt:GetCurPos();
+		--LuaDataAgt:Play2DFXFollowTroopInfo("Prefabs/BasicEffect/UI_CharEff_FaFangXiaJiang", 1 , TarPos);
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_FaFangXiaJiang", LuaDataAgt, TarPos, TarPos, 1, true);
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减
+	local Ratio = 0.3;
+	local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF) * Ratio;
+	
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, AddWitDef);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_561 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

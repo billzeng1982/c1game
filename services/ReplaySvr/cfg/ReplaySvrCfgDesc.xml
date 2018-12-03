@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="GBK" standalone="yes" ?>
+<metalib tagsetversion="1" name="ReplaySvrCfg" version="1" >
+	<struct name="ReplaySvrCfg" version="1" desc="主配置结构">
+		<entry name="ProcIDStr" 			type="string" 	size="20" />
+		<entry name="ProcID"				type="int" 		defaultvalue="0"/>
+		<entry name="ZoneSvrIDStr" 		type="string"	size="20" />
+		<entry name="ZoneSvrID"			type="int"		defaultvalue="0"/>
+
+		<entry name="BusGCIMKey" 			type="int"		/>
+		<entry name="UpdateInterval" 		type="int"      defaultvalue="60"   	desc="单位:秒"/>
+		<entry name="CheckInterval" 		type="int"		defaultvalue="15"  		desc="单位:秒"/>
+		<entry name="URLRoot" 				type="string"   size="128"   			desc="上传/下载录像文件的根URL"/>
+		<entry name="RootDir" 				type="string"	size="128"  			desc="存放录像文件的根目录"/>
+	</struct>
+</metalib>
+

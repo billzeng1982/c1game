@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="GBK" standalone="yes" ?>
+<metalib tagsetversion="1" name="PKGMETA" version="1">
+    <include file="common_proto.xml"/>
+    
+    <macrosgroup name="IDIP_MSG_GROUP" >
+        <macro name="IDIP_MSG_GM_GET_PLAYER_LOG_REQ"    value="10000"	desc="Gm获取玩家日志请求"/>
+        <macro name="IDIP_MSG_GM_GET_PLAYER_LOG_RSP"    value="10001"	desc="Gm获取玩家日志响应"/>
+    </macrosgroup>	
+    
+    <macro name="MAX_NUM_GM_LOG" 	value="300"     desc="日志最大条数" />
+    <macro name="MAX_LEN_GM_LOG" 	value="256"     desc="单条日志最大长度" />
+    <macro name="MAX_LEN_GM_REQ_BLOB"   value="4096"    desc="gm返回的blob的最大长度" />
+    <macro name="MAX_LEN_GM_RSP_BLOB"   value="4096"    desc="gm返回的blob的最大长度" />
+    
+    <struct name="IDIP_PKG_GM_GET_PLAYER_LOG_REQ"	version="1">
+		    <entry name="Uin"                 type="uint64"               desc="玩家Uin"/>
+		    <entry name="StartTime"           type="string"               desc="查询开始时间"	    size="MAX_TIMEINFO_LENGTH"/>
+		    <entry name="EndTime"             type="string"               desc="查询结束时间"	    size="MAX_TIMEINFO_LENGTH"/>
+        	<entry name="Type"                 type="uint8"                desc="gm操作类型，参考GM_OPT_TYPE"/>
+        	<entry name="Name"                 type="string"               desc="查询的名字"	    size="MAX_NAME_LENGTH"/>
+        	<entry name="IsGuild"              type="uint8"                desc="是否为军团"	    />
+	</struct>
+    
+    <struct name="IDIP_PKG_GM_GET_PLAYER_LOG_RSP"	version="1">
+		<entry name="Count"				type="uint16"		desc="传输的条数"/>
+		<entry name="LogInfo"			type="string"		desc="Gm查询日志的结果"    size="MAX_LEN_GM_LOG"  count="MAX_NUM_GM_LOG"  refer="Count"/>
+	</struct>
+
+    <struct name="IDIP_GM_REQ_BLOB" version="1">
+        <entry name="Len"               type="int32"        />
+        <entry name="Data"              type="uint8"        count="MAX_LEN_GM_REQ_BLOB" refer="Len" />
+    </struct>
+
+    <struct name="IDIP_GM_RSP_BLOB" version="1">
+        <entry name="Len"               type="int32"        />
+        <entry name="Data"              type="uint8"        count="MAX_LEN_GM_RSP_BLOB" refer="Len" />
+    </struct>
+  <struct name="IDIP_GM_MULT_KICK_RSP_BLOB" version="1">
+    <entry name="Len"               type="int32"        />
+    <entry name="Data"              type="uint8"        count="MAX_LEN_GM_RSP_BLOB" refer="Len" />
+  </struct>
+  <struct name="IDIP_GM_DEL_PROPS_RSP_BLOB" version="1">
+    <entry name="Len"               type="int32"        />
+    <entry name="Data"              type="uint8"        count="MAX_LEN_GM_RSP_BLOB" refer="Len" />
+  </struct>
+    <struct name="IdipPkgHead" version="1">
+		<entry name="MsgId"          type="uint16" />
+		<entry name="ReservId"		   type="uint64"    desc="保留的id字段，某些应用可能会使用"/>
+	</struct>
+    
+    <union name="IdipPkgBody" version="1">
+        <entry name="GmGetPlayerLogReq"		    type="IDIP_PKG_GM_GET_PLAYER_LOG_REQ"		id="IDIP_MSG_GM_GET_PLAYER_LOG_REQ" />   
+        <entry name="GmGetPlayerLogRsp"		    type="IDIP_PKG_GM_GET_PLAYER_LOG_RSP"		id="IDIP_MSG_GM_GET_PLAYER_LOG_RSP" />  
+	</union> 
+    
+    <struct name="IdipPkg" version="1">
+		<entry name="Head" type="IdipPkgHead" />
+		<entry name="Body" type="IdipPkgBody" select="Head.MsgId" />
+	</struct>
+    
+</metalib>

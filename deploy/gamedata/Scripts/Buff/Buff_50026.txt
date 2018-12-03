@@ -1,0 +1,58 @@
+--[[
+名称：云垂先锋buff
+类型：弓兵阵法
+描述：增加暴击率
+--]]
+local ThisScriptId = 50026;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	local CriticalChance = LuaDataAgt:GetResTacticsBuffValue(ThisScriptId); 
+	--local CriticalChance = 1000;
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL, CriticalChance);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+		
+		local TarPos = LuaDataAgt:GetCurPos();
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_BaoJiShangSheng", LuaDataAgt, TarPos, TarPos, 0, true); -- 延迟0播该特效
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+	local CriticalChance = LuaDataAgt:GetResTacticsBuffValue(ThisScriptId); 
+	--local CriticalChance = 1000;
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL, -CriticalChance);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+	
+end
+
+Buff_50026 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

@@ -1,0 +1,54 @@
+--[[
+名称：百骑劫营
+类型：武将技能Buff
+描述：百骑劫营甘宁加属性，加速0.3倍
+--]]
+local ThisScriptId = 511;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	-- Buff时间
+	local timevalue = LuaDataAgt:GetActiveSkillAdditionValue(2);
+	--LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, timevalue);
+	
+	--属性加减
+	local stk = LuaDataAgt:GetActiveSkillAdditionValue(1);
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, stk); 
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, stk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT, stk);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, stk);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+    local stk = LuaDataAgt:GetActiveSkillAdditionValue(1);
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -stk);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -stk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT, -stk);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, -stk);
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_511 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

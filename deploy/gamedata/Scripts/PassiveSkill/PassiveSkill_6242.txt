@@ -1,0 +1,75 @@
+--[[
+名称：金刚护体
+类型：被动技能
+描述：免伤小额伤害
+--]]
+local ThisScriptId = 6242;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 添加血量过滤处理
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, 1);
+	--LuaDataAgt:SetFilter(FILTER_TYPE.TRIG, TARGET_GROUP.NONE, 0);
+
+	print("RunBorn PassiveSkill Id = "..ThisScriptId);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt)
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	if IsOnServer then
+		LuaDataAgt:SetSkillEnable(false);
+		return;
+	end
+
+	LuaDataAgt:SetSkillEnable(false);
+end
+
+--Skill过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	--local iDamge1 = FilterValue.m_fFoo1 ;
+	print("iDamge1=="..FilterValue.m_fFoo1);
+	if iFilterType == FILTER_TYPE.HP then
+		local iHp = FilterValue.m_fFoo1 ;
+		if not IsSource and iHp < 0 then
+			local iRandomValue = math.random(1,10000);
+			local iProb = LuaDataAgt:GetPassiveSkillBaseValue(ThisScriptId, 2) * 100;
+			if iRandomValue < iProb then
+				local MaxHp = LuaDataAgt:GetHp(VALUE_TYPE.RUNTIME_CONF);
+				local Ratio = LuaDataAgt:GetPassiveSkillBaseValue(ThisScriptId, 1) / 100;
+				local IgnoreDMG = MaxHp * Ratio;
+
+				FilterValue.m_fFoo1 = iHp + IgnoreDMG;
+				
+				if iHp + IgnoreDMG > 0 then --免伤计算公式
+					FilterValue.m_fFoo1 = 0;
+				end
+				
+			end
+			
+		end
+	end
+	--iDamge1 = FilterValue.m_fFool;
+	print("iDamge1=="..FilterValue.m_fFoo1);
+	return FilterValue;
+end
+
+
+PassiveSkill_6242 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+
+	func_doFilter = doFilter;
+}

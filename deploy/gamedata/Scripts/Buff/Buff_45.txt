@@ -1,0 +1,106 @@
+--[[
+名称：歃血为盟
+类型：武将技能Buff
+描述：分担伤害，并减伤
+--]]
+local ThisScriptId = 45;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	
+	--设置Buff生命时间
+	local itime = source:GetActiveSkillAdditionValue(2);
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+	
+	--设置Buff过滤HP信息，XXX：优先级-1较低，靠后处理，越接近真实伤害值
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, -1);
+	
+	-- 设置Buff公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减回退
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+--Buff过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+	
+	if iFilterType == FILTER_TYPE.HP then
+		if not IsSource then
+			-- HP发起对象不是该Filter所属对象，则表示是被其他人照成的HP CHG
+			-- 对Buff关联者同时作用
+			local iHp = FilterValue.m_fFoo1;
+			
+			if iHp < 0 then
+				if not (FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_BUFF and FilterValue.m_iValueChgPara == ThisScriptId) then
+					local buffSource = LuaDataAgt:GetBuffSource();
+					local percent = buffSource:GetActiveSkillAdditionValue(1);
+					
+					if not IsOnServer then
+						-- 客户端
+						local listOwner = LuaDataAgt:GetBuffOwnerList();
+						local num = listOwner.Count;
+						
+						local iDamageReal = iHp / num * (1 - percent / 100);
+						FilterValue.m_fFoo1 = iDamageReal;
+						
+						for i=0,listOwner.Count-1 do
+							local rOwner = listOwner:get_Item(i);
+							if not rOwner:Equal(LuaDataAgt) then
+								
+								rOwner:ChgHp(VALUE_TYPE.CURRENT, iDamageReal, buffSource, VALUE_CHG_TYPE.CHG_HP_BUFF, ThisScriptId, 0);
+							end
+						end
+					else
+						-- 服务器
+						local num = LuaDataAgt:GetBuffOwnerListCnt();
+						
+						local iDamageReal = iHp / num * (1 - percent / 100);
+						FilterValue.m_fFoo1 = iDamageReal;
+					end
+				end
+			end
+		end
+	end
+	
+	return FilterValue;
+end
+
+--Buff公式处理
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = iDamageRef;
+	
+	return iRet;
+end
+
+Buff_45 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+	
+	func_doFilter = doFilter;
+	func_doFormula = doFormula;
+}

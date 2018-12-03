@@ -1,0 +1,47 @@
+--[[
+名称：奇袭先锋
+类型：主动技能
+描述：对城墙造成的伤害提高，攻城读条不会被打断或减速
+--]]
+local ThisScriptId = 10010;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--没有技能框 清除其它技能框
+	LuaDataAgt:ClearSkillRange();
+	LuaDataAgt:ClearAllSkillTarget();
+	if LuaDataAgt:HasBuff(16) then
+	    return false;
+	end
+	 return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	
+	--设置技能目标为自己，表示该技能有目标，生效会延迟
+	local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.NONE);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+
+	LuaDataAgt:AddBuff(16, LuaDataAgt,nil);
+	
+	--直捣黄龙 不会打断攻城
+	--LuaDataAgt:InterruptSiege();
+end
+
+GeneralSkill_10010= {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+}

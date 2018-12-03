@@ -1,0 +1,66 @@
+--[[
+名称：落雷之箭
+类型：被动技能buff
+描述：这是翻倍buff 原buffid6062
+--]]
+local ThisScriptId = 13007;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	local rSource = LuaDataAgt:GetBuffSource();
+	
+	--属性加减
+	local PassiveSkillRatio = rSource:GetPassiveSkillBaseValue(6062, 1) / 50;
+	local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * PassiveSkillRatio;
+	local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * PassiveSkillRatio;
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, AddStrAtk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT, AddWitAtk);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+
+		local TarPos = LuaDataAgt:GetCurPos();
+		--LuaDataAgt:Play2DFXFollowTroopInfo("Prefabs/BasicEffect/UI_CharEff_ShangHaiZengJia", 3 , TarPos);
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_ShangHaiZengJia", LuaDataAgt, TarPos, TarPos, 3, true);
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local rSource = LuaDataAgt:GetBuffSource();
+	
+	--属性加减
+	local PassiveSkillRatio = rSource:GetPassiveSkillBaseValue(6062, 1) / 50;
+	local AddStrAtk = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * PassiveSkillRatio;
+	local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * PassiveSkillRatio;
+	LuaDataAgt:ChgStrAtk(VALUE_TYPE.CURRENT, -AddStrAtk);
+	LuaDataAgt:ChgWitAtk(VALUE_TYPE.CURRENT, -AddWitAtk);
+
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_13007 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

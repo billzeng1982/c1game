@@ -1,0 +1,57 @@
+--[[
+名称：明察之阵
+类型：军师技能
+描述：解除控制，免疫一段时间
+--]]
+local ThisScriptId = 4;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt)
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	LuaDataAgt:ClearTarget();
+    local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.SELF);
+	--去掉死亡城内部队
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+end
+
+--技能生效
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.SELF);
+	local count = targetList.Count; 
+	if count <= 0 then
+		return;
+	end
+	
+	for i = 0,count - 1 do
+		targetList:get_Item(i):AddBuff(1040, LuaDataAgt, nil);
+		
+		targetList:get_Item(i):DelBuff(0, BUFF_TYPE.BUFF_TYPE_ATTR_LOSS, LuaDataAgt);
+		targetList:get_Item(i):DelBuff(0, BUFF_TYPE.BUFF_TYPE_SPEED_LOSS, LuaDataAgt);
+		targetList:get_Item(i):DelBuff(0, BUFF_TYPE.BUFF_TYPE_FAINT, LuaDataAgt);
+		targetList:get_Item(i):DelBuff(0, BUFF_TYPE.BUFF_TYPE_RESTRAIN, LuaDataAgt);
+		targetList:get_Item(i):DelBuff(0, BUFF_TYPE.BUFF_TYPE_SCOFF, LuaDataAgt);
+	end
+end
+
+--技能生效完成
+local function takeEffectDone(LuaDataAgt)
+	
+end
+
+
+MasterSkill_4 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	func_takeEffectDone = takeEffectDone;
+}

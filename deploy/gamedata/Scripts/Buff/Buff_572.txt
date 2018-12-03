@@ -1,0 +1,54 @@
+--[[
+名称：三分归晋
+类型：武将技能Buff
+描述：击杀加攻
+--]]
+local ThisScriptId = 572;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	print("add buff success");
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	local rSource = LuaDataAgt:GetBuffSource();
+	--local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.SELF);
+	local targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.SELF, SHAPE_TYPE.CIRCLE, 0, 0, 50, 0);
+	print("BuffCount =="..targetList.Count);
+	for i = 0 , targetList.Count - 1 do
+		local target = targetList:get_Item(i) ;
+		if target:Equal(LuaDataAgt) then
+		--不包括自己
+		print("IsSelf!!!");
+		else
+			target:ChgHp(VALUE_TYPE.CURRENT, 1, rSource,VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, 2051, 0);
+		end
+	
+	end 
+
+end
+
+Buff_572 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

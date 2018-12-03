@@ -1,0 +1,102 @@
+--[[
+名称：被动技能模版
+类型：被动技能
+描述：只加减属性
+--]]
+local ThisScriptId = 594; 
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+
+	local source = LuaDataAgt:GetBuffSource();
+	local itime = source:GetActiveSkillAdditionValue(2);
+	
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+	
+	local source = LuaDataAgt:GetBuffSource();
+	--方便技能描述显示 百分比变千分比
+	local AddBase = source:GetActiveSkillBaseValue(1) * 10;
+	local AddBase2 = source:GetActiveSkillBaseValue(2) / 100;
+	local AddBase3 = source:GetActiveSkillBaseValue(3) * 10;
+	local dancePower = LuaDataAgt:GetActiveSkillShareValue(0);
+	local DanceAddRatio = source:GetArmyBaseValue();	
+
+	--一星加成25%，二星加成50%,三星加成100%
+	local para = 0;
+	if dancePower >= 4 then
+		para = 1;
+	end
+	
+	local CriticalChance = AddBase * ((DanceAddRatio - 1) * para + 1);
+	local WitDefRatio = AddBase2 * ((DanceAddRatio - 1) * para + 1);
+	local SuckBloodRatio = AddBase3 * ((DanceAddRatio - 1) * para + 1);
+	local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF);
+	AddWitDef = AddWitDef * WitDefRatio ; 
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL, CriticalChance);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, AddWitDef);
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_SUCKBLOOD, SuckBloodRatio);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+		
+		local zero = Vector3(0, 0, 0);
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_BaoJiShangSheng", LuaDataAgt, Vector3.zero, Vector3.zero, 0.5, true);
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_FaFangShangSheng", LuaDataAgt, Vector3.zero, Vector3.zero, 1.5, true);
+		LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_HuiFuShangSheng", LuaDataAgt, Vector3.zero, Vector3.zero, 2.5, true);
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	local source = LuaDataAgt:GetBuffSource();
+	local AddBase = source:GetActiveSkillBaseValue(1) * 10;
+	local AddBase2 = source:GetActiveSkillBaseValue(2) / 100;
+	local AddBase3 = source:GetActiveSkillBaseValue(3) * 10;
+	local dancePower = LuaDataAgt:GetActiveSkillShareValue(0);
+	local DanceAddRatio = source:GetArmyBaseValue();	
+
+	--一星加成25%，二星加成50%,三星加成100%
+	local para = 0;
+	if dancePower >= 4 then
+		para = 1;
+	end
+	
+	local CriticalChance = AddBase * ((DanceAddRatio - 1) * para + 1);
+	local WitDefRatio = AddBase2 * ((DanceAddRatio - 1) * para + 1);
+	local SuckBloodRatio = AddBase3 * ((DanceAddRatio - 1) * para + 1);
+	local AddWitDef = LuaDataAgt:GetWitDef(VALUE_TYPE.ORIGIN_CONF);
+	AddWitDef = AddWitDef * WitDefRatio ; 
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_CHANCE_CRITICAL, -CriticalChance);
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, -AddWitDef);
+	LuaDataAgt:ChgAttribute(VALUE_TYPE.CURRENT, ATTR_TYPE.ATTR_SUCKBLOOD, -SuckBloodRatio);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_594 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+
+}

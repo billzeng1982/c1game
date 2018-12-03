@@ -1,0 +1,56 @@
+--[[
+名称：凤凰涅槃
+类型：被动技能
+描述：复活时间减少15
+--]]
+local ThisScriptId = 5044; 
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt)
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	if IsOnServer then
+		LuaDataAgt:SetSkillEnable(false);
+		return;
+	end
+	
+	-- 复活时间改变
+	LuaDataAgt:ChgRevivalTime(VALUE_TYPE.RUNTIME_CONF, -15);
+	
+	-- 被动技能一场比赛只生效一次
+	LuaDataAgt:SetSkillEnable(false);
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	
+end
+
+--技能过滤
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	
+end
+
+--这个ID要和脚本ID保持一致
+PassiveSkill_5044 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	
+	func_doFormula = doFormula;
+	func_doFilter = doFilter;
+}

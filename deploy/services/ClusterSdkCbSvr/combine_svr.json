@@ -1,0 +1,8 @@
+{
+    "CombineSvrList":
+    {
+        "说明":"合服映射表, key和value都表示合服Id,key服合并到value服",
+        "0":"0"
+    }
+}
+

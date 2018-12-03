@@ -1,0 +1,138 @@
+--[[
+名称：天下归心
+类型：主动技能
+描述：曹操以让人折服的心胸和气度，让敌军信服归顺，对周围敌军造成伤害并回复等量生命。
+--]]
+local ThisScriptId = 2013;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	-- 设置公式
+	LuaDataAgt:SetFormula(VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+
+	--设置过滤器
+	LuaDataAgt:SetFilter(FILTER_TYPE.HP, TARGET_GROUP.NONE, -5);
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(1) then
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20*1.05, 0);  --- 秘籍1：增大范围
+		LuaDataAgt:MapDrawCircle(0,20*1.05);
+	else
+		targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20, 0);
+		LuaDataAgt:MapDrawCircle(0,20);
+	end
+
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+
+	--没有技能框 清除其它技能框
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.ENEMY);
+	--AI操作需要至少命中n人，玩家操作无要求
+	if (AIId == 0) then
+
+	else
+		if targetList.Count > 0 then
+			return true;
+		else
+			return false;
+		end
+	end
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList;
+	if LuaDataAgt:IsHaveActiveSkillCheats(1)  then
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20*1.05, 0);  --- 秘籍1：增大范围
+	else
+	    targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20, 0);
+	end
+
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+
+	if targetList.Count > 0 then
+		-- 额外加BUFF
+		LuaDataAgt:AddBuff(6130, LuaDataAgt, nil);
+		
+		local CurPos = LuaDataAgt:GetCurPos();
+		--LuaDataAgt:PlayFX("Prefabs/BasicEffect/3D_CharEff_HuiFu", LuaDataAgt, CurPos, CurPos, 1.2, true); -- 延迟1.5播该特效
+
+		for i = 0,targetList.Count - 1 do
+			local target = targetList:get_Item(i);
+			--扣血
+			target:ChgHp(VALUE_TYPE.CURRENT, 0, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId, 0);
+		end
+	end
+
+	LuaDataAgt:InterruptSiege();
+end
+
+--技能公式
+local function doFormula(LuaDataAgt, iFormulaType, iFormulaPara, rSource, rTarget, iDamageRef)
+	local iRet = iDamageRef;
+
+	if LuaDataAgt:Equal(rTarget) then
+		-- 目标是自己则加血
+		local a = rSource:GetActiveSkillBaseValue(2) / 100;
+		iRet = -iRet * a;
+	else
+		-- 目标是敌人则减血
+		local WitAtk = rSource:GetWitAtk(VALUE_TYPE.CURRENT);
+		local WitDef = rTarget:GetWitDef(VALUE_TYPE.CURRENT);
+		local Base = rSource:GetActiveSkillBaseValue(1);
+		local MinDmg = Base;
+		local Ratio = rSource:GetActiveSkillRateValue(1);
+
+		iRet = Base + (WitAtk - WitDef) * Ratio;
+		iRet = math.max(iRet,MinDmg);
+
+		iRet = -iRet;
+	end
+
+	return iRet;
+end
+
+--技能过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+	-- Filter所有者是否是发起对象
+	local IsSource = rFilterOwner:Equal(FilterValue:GetSource());
+
+	if iFilterType == FILTER_TYPE.HP and
+		FilterValue.m_iValueChgType == VALUE_CHG_TYPE.CHG_HP_GENERALSKILL and
+		FilterValue.m_iValueChgPara == ThisScriptId then
+
+		local iHp = FilterValue.m_fFoo1;
+		if iHp < 0 and IsSource and not IsOnServer then
+			--自己加血
+			LuaDataAgt:ChgHp(VALUE_TYPE.CURRENT, iHp, LuaDataAgt, VALUE_CHG_TYPE.CHG_HP_GENERALSKILL, ThisScriptId,221);
+		end
+	end
+
+	return FilterValue;
+end
+
+GeneralSkill_2013 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+
+	func_doFormula = doFormula;
+	func_doFilter = doFilter;
+}

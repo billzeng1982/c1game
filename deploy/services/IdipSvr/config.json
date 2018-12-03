@@ -1,0 +1,16 @@
+{
+  "account_list":
+  {
+    "test": "123456",
+    "test1": "1234567"
+  },
+
+  "trust_ip_list": [
+    "172.16.1.114",
+    "172.16.1.140"
+  ],
+
+  "secret_key": "61oETzKXQAGaYdkL5gEmGeJJY",
+
+  "session_timeout": 300
+}

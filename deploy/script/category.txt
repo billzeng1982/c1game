@@ -1,0 +1,23 @@
+1.层级分类
+Fight层级：FightSvr,FightConn,MatchSvr
+Cluster层级：ClusterGate,SdkDMSvr,AccountSvr,DirSvr,ClusterSdkCbSvr
+WorldLogic层级：ZoneSvr,ZoneConn,MailSvr,RankSvr,ReplaySvr,XiYouSDKSvr
+WorldData层级：FriendSvr,GuildSvr,Log2DBSvr,MailDBSvr,RoleSvr,SerialNumSvr,MessageSvr
+
+2.双机部署分配
+A机器上配WorldLogic和fight
+B机器上配worlddata层级和Cluster层级
+
+3.脚本的启动
+	<1>可以分别使用Fight.sh,Cluster.sh,WorldLogic.sh,WorldData.sh启动相应层级的server进程
+	<2>可以使用改造后的gamesvr.sh来启动，gamesvr.sh+start则会启动全部的进程，这样方式可以在内网测试使用，gamesvr.sh+fgt启动Fight层级组,
+	gamesvr.sh+clu启动Cluster层级组，gamesvr.sh+wl启动WorldLogic层级组，gamesvr.sh+wd启动WorldData层级组
+	
+4.脚本的停止
+当采用gamesvr.sh直接启动方式时，采用gamesvr.sh+stop停止所有进程的时候，会先停止没有涉及操作db的进程，在sleep 10s后，才停止涉及操作db的相关
+进程。
+
+5.supervisor部署管理
+在用supervisor部署管理进程时，将Fight层级的conf文件放到Fight文件夹下，Cluster层级的conf文件放到Cluster文件夹下，WorldLogic的conf文件放到
+WorldLogic文件夹下，WorldData的conf文件放在WorldData文件夹下，在supervisor启动时，会自动扫描所有的conf文件，这里可以考虑用python脚本直接
+生成每个进程的conf文件，而不需要一个一个加。

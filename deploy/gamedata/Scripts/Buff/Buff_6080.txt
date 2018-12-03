@@ -1,0 +1,70 @@
+--[[
+名称:世之良将
+类型:被动技能
+描述:曹仁每次肉搏攻击可以提升自己的物防<color=#53de1c>30%</color>
+--]]
+local ThisScriptId = 6080; 
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	local buffLevel = LuaDataAgt:GetBuffLevel();	--实现叠加机制
+	if buffLevel >= 3 then 
+		buffLevel = 3;
+	end
+	
+	local PassiveSkillRatio = LuaDataAgt:GetPassiveSkillBaseValue(ThisScriptId, 1) / 100;
+	local AddStrDef = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * PassiveSkillRatio * buffLevel;
+	local iDef = LuaDataAgt:GetStrDef(VALUE_TYPE.CURRENT);
+	print("iDef1=="..iDef);
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, AddStrDef);
+	iDef = LuaDataAgt:GetStrDef(VALUE_TYPE.CURRENT);
+	print("iDef2=="..iDef);
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+
+	end
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减
+	
+	local buffLevel = LuaDataAgt:GetBuffLevel();	--实现叠加机制
+	if buffLevel >= 3 then 
+		buffLevel = 3;
+	end
+	local PassiveSkillRatio = LuaDataAgt:GetPassiveSkillBaseValue(ThisScriptId, 1) / 100;
+	
+	local AddStrDef = LuaDataAgt:GetStrAtk(VALUE_TYPE.ORIGIN_CONF) * PassiveSkillRatio * buffLevel;
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -AddStrDef);
+	
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+
+end
+
+Buff_6080 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

@@ -1,0 +1,55 @@
+--[[
+名称：七进七出
+类型：主动技能
+描述：全军加速并加攻
+--]]
+local ThisScriptId = 10002;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+	
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+
+	LuaDataAgt:ClearTarget();
+	--没有技能框 清除其它技能框
+	LuaDataAgt:ClearSkillRange();
+	--找我方部队
+	local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.SELF);
+	--小地图技能目标提示标志
+	LuaDataAgt:SetMapSkillTarget(TARGET_GROUP.SELF);
+	if LuaDataAgt:HasBuff(5) then
+	    return false;
+	end
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	--找我方部队
+	local targetList = LuaDataAgt:FindTarget(TARGET_GROUP.SELF);
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	--找我方部队
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.SELF);
+	for i=0,targetList.Count-1 do
+		targetList:get_Item(i):AddBuff(5, LuaDataAgt, nil);
+	end
+	LuaDataAgt:InterruptSiege();
+end
+
+GeneralSkill_10002 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+}

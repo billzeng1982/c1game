@@ -1,0 +1,56 @@
+--[[
+名称：暴虐不仁	
+类型：被动技能
+描述：每10秒降低对方士气0.3点
+--]]
+--5000 + 武将ID*10 + 0~9 : ID 命名规则
+--这个ID要和脚本ID保持一致
+local ThisScriptId = 5724; 
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt)
+	LuaDataAgt:ClearTarget();
+
+	local target = LuaDataAgt:FindTarget(TARGET_GROUP.ENEMY);
+	return true;
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local target = LuaDataAgt:FindTarget(TARGET_GROUP.ENEMY);
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	if IsOnServer then
+		LuaDataAgt:SetSkillEnable(false);
+		return;
+	end
+	local target = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	--本方每10s多增加0.3点士气
+	target:get_Item(0):ChgMorale(-0.3);
+end
+
+--Skill过滤处理
+local function doFilter(LuaDataAgt, iFilterType, rFilterOwner, FilterValue)
+
+	return FilterValue;
+end
+
+--这个ID要和脚本ID保持一致
+PassiveSkill_5724 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+	
+	func_doFormula = doFormula;
+	func_doFilter = doFilter;
+}

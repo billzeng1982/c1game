@@ -1,0 +1,80 @@
+--[[
+名称：偷盗名驹
+类型：主动技能
+描述：自己加速，距离最近的一个敌方减速
+--]]
+local ThisScriptId = 10021;
+
+--技能诞生处理
+local function runBorn(LuaDataAgt)
+
+end
+
+--技能条件判断
+local function checkCond(LuaDataAgt, AIId)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList;
+	
+	--自身周围
+	targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20, 0);  
+	LuaDataAgt:MapDrawCircle(0,20);
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	 
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+	
+	if targetList.Count > 0 then
+		LuaDataAgt:SetMapSingleSkillTarget(targetList,5,TARGET_GROUP.ENEMY);
+		return true;
+	end
+	
+	LuaDataAgt:ClearAllSkillTarget();
+	LuaDataAgt:SetSkillPrompt(5);
+	return true;
+
+end
+
+--找对象，上面条件满足后执行
+local function findTarget(LuaDataAgt)
+	--找之前先清一次
+	LuaDataAgt:ClearTarget();
+	local targetList;
+	
+	--自身周围
+	targetList = LuaDataAgt:FindTargetEx(TARGET_GROUP.ENEMY, SHAPE_TYPE.CIRCLE, 0, 0, 20, 0);  
+	LuaDataAgt:MapDrawCircle(0,20);
+	
+	--剔除死亡或回城部队，targetList也会随之改变
+	LuaDataAgt:RemoveTroopDeadOrRetreat(targetList);
+	-- 剔除不可见部队
+	LuaDataAgt:RemoveTroopInVisible(targetList);
+	
+	--目标是对面距离最近的
+	LuaDataAgt:RemoveNotMiniTarget(targetList, CURRENT_VALUE_TYPE.DISTANCE);	
+
+end
+
+--技能生效，数值处理
+local function takeEffect(LuaDataAgt)
+	local targetList = LuaDataAgt:GetTargetList(TARGET_GROUP.ENEMY);
+	
+	--敌人减速
+	if targetList.Count > 0 then
+		targetList:get_Item(0):AddBuff(10020, LuaDataAgt, nil);
+	end
+	
+	LuaDataAgt:AddBuff(10021,LuaDataAgt,nil);  --自己加速
+	
+	LuaDataAgt:InterruptSiege();
+end
+
+
+GeneralSkill_10021 = {
+	func_runBorn = runBorn;
+	func_checkCond = checkCond;
+	func_findTarget = findTarget;
+	func_takeEffect = takeEffect;
+}

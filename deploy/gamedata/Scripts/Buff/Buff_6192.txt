@@ -1,0 +1,58 @@
+--[[
+名称：智商压制
+类型：星级被动Buff
+描述：弓箭伤害会降低敌方法术防御3%，持续10秒，最多叠加5层
+--]]
+local ThisScriptId = 6192;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	--属性加减
+	local buffLevel = LuaDataAgt:GetBuffLevel();
+	local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * 0.03;
+	
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, -AddWitAtk * buffLevel);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+	--测试
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, 10);
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减
+	local buffLevel = LuaDataAgt:GetBuffLevel();
+	local AddWitAtk = LuaDataAgt:GetWitAtk(VALUE_TYPE.ORIGIN_CONF) * 0.03;
+	
+	LuaDataAgt:ChgWitDef(VALUE_TYPE.CURRENT, AddWitAtk * buffLevel);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_6192 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}

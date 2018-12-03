@@ -1,0 +1,67 @@
+--[[
+名称：BOSS张飞技能削弱敌方物防
+类型：武将技能Buff
+描述：削弱敌方物防
+--]]
+local ThisScriptId = 30001;
+
+--Buff诞生处理
+local function runBorn(LuaDataAgt)
+	Source = LuaDataAgt:GetBuffSource();
+	
+	--buff时间设置
+	local itime = 10;
+	
+	if LuaDataAgt:IsHaveActiveSkillCheats(1) then     --秘籍1：增加时长
+	    itime = itime * 1.1;
+	end
+	
+	LuaDataAgt:SetBuffLifeTime(VALUE_TYPE.RUNTIME_CONF, itime);
+	
+	--属性加减
+	local Base = LuaDataAgt:GetActiveSkillBaseValue(2);
+	local Ratio = LuaDataAgt:GetActiveSkillRateValue(2);
+	local defChg = -5000;
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, defChg);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end 
+end
+
+--Buff驱散条件判断
+local function checkDeadCond(LuaDataAgt)
+	
+	return false;
+end
+
+--Buff驱散生效
+local function runDead(LuaDataAgt)
+	--属性加减
+	local Base = LuaDataAgt:GetActiveSkillBaseValue(2);
+	local Ratio = LuaDataAgt:GetActiveSkillRateValue(2);
+	local defChg = -5000;
+	LuaDataAgt:ChgStrDef(VALUE_TYPE.CURRENT, -defChg);
+	
+	if not IsOnServer then
+		LuaDataAgt:RefreshFightNum();
+	end 
+end
+
+--Buff生效条件判断
+local function checkEffectCond(LuaDataAgt)
+	return true;
+end
+
+--Buff生效
+local function takeEffect(LuaDataAgt)
+	
+end
+
+Buff_30001 = {
+	func_runBorn = runBorn;
+	func_checkDeadCond = checkDeadCond;
+	func_runDead = runDead;
+	func_checkEffectCond = checkEffectCond;
+	func_takeEffect = takeEffect;
+}
