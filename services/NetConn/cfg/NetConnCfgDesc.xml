@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="GBK" standalone="yes" ?>
 <metalib tagsetversion="1" name="NetConnCfg" version="1" >
 	<!--TCP config -->
-	<struct name="TcpConfig" version="1" desc="TCPÁ¬½ÓÅäÖÃ">
+	<struct name="TcpConfig" version="1" desc="TCPè¿žæŽ¥é…ç½®">
     	<entry name="IsEncrypt"				type="int"		defaultvalue="0"/>
 		<entry name="TCPSwitch" 			type="int" 		defaultvalue="0"/>
 		<entry name="MaxFD" 				type="int" 		defaultvalue="0"/>
 		<entry name="TcpListenPort" 		type="uint16"	defaultvalue="0"/>
 		<entry name="SendBuff" 				type="int" 		defaultvalue="0"/>
 		<entry name="RecvBuff" 				type="int"		defaultvalue="0"/>
-		<entry name="MaxIdle" 				type="uint16" 	defaultvalue="0" 	desc="¿ÕÏÐ¹Ø±ÕÊ±¼ä(Ãë),Áã±íÊ¾²»¹Ø±Õ" />
+		<entry name="MaxIdle" 				type="uint16" 	defaultvalue="0" 	desc="ç©ºé—²å…³é—­æ—¶é—´(ç§’),é›¶è¡¨ç¤ºä¸å…³é—­" />
 		<entry name="TcpBackLog" 			type="uint16" 	defaultvalue="128" />
 	</struct>
 
 	<!--UDP config -->
-	<struct name="UdpConfig" version="1" desc="UDPÁ¬½ÓÅäÖÃ">
+	<struct name="UdpConfig" version="1" desc="UDPè¿žæŽ¥é…ç½®">
 		<entry name="UDPSwitch" 			type="int" 		defaultvalue="0"/>
 		<entry name="UdpBindPort" 			type="uint16" 	defaultvalue="0"/>
 		<entry name="MaxFD" 				type="int" 		defaultvalue="0"/>
-		<entry name="QuickResendSwitch" 	type="int"  	defaultvalue="1" desc="¿ìËÙÖØ´«¿ª¹Ø"/>
-		<entry name="MaxIdle" 				type="uint16" 	defaultvalue="0" desc="¿ÕÏÐ¹Ø±ÕÊ±¼ä(Ãë),Áã±íÊ¾²»¹Ø±Õ" />
+		<entry name="QuickResendSwitch" 	type="int"  	defaultvalue="1" desc="å¿«é€Ÿé‡ä¼ å¼€å…³"/>
+		<entry name="MaxIdle" 				type="uint16" 	defaultvalue="0" desc="ç©ºé—²å…³é—­æ—¶é—´(ç§’),é›¶è¡¨ç¤ºä¸å…³é—­" />
 
 		<entry name="UdpPortRangeBegin"		type="uint16"	defaultvalue="40000" />
-		<entry name="UdpPortRangeEnd"		type="uint16"	defaultvalue="49999" />
+		<entry name="UdpPortRangeEnd"		type="uint16"	defaultvalue="41999" />
 		<entry name="UdpAckRspNum"			type="uint32"	defaultvalue="5" />
 		<entry name="UdpAckRspMs"			type="uint32"	defaultvalue="60" />
 		<entry name="MaxResendTimes"		type="int"		defaultvalue="10" />
 		<entry name="MinResendInterval"   	type="int"		defaultvalue="300" />
 		<entry name="MaxResendInterval"   	type="int"		defaultvalue="1000" />
-		<entry name="QuickResendTriggerTimes" type="int" 	defaultvalue="3"	 desc="ÊÕµ½¼¸´ÎÖØ¸´µÄPeerCurRecvedSeqºó´¥·¢¿ìËÙÖØ´«"/>
-		<entry name="UdpRecvTimeoutMs"		type="int"		defaultvalue="10000" 	desc="»º´æµÄudpÂÒÐò°üµÄ³¬Ê±Ê±¼ä"/>
+		<entry name="QuickResendTriggerTimes" type="int" 	defaultvalue="3"	 desc="æ”¶åˆ°å‡ æ¬¡é‡å¤çš„PeerCurRecvedSeqåŽè§¦å‘å¿«é€Ÿé‡ä¼ "/>
+		<entry name="UdpRecvTimeoutMs"		type="int"		defaultvalue="10000" 	desc="ç¼“å­˜çš„udpä¹±åºåŒ…çš„è¶…æ—¶æ—¶é—´"/>
 
-		<entry name="UdpListenRecvBuffSize"		type="uint32"	defaultvalue="65536" 	desc="Accept²ÎÊý" />
-		<entry name="UdpListenSendBuffSize"		type="uint32"	defaultvalue="65536" 	desc="Accept²ÎÊý" />
-		<entry name="UdpClientRecvBuffSize"		type="uint32"	defaultvalue="32768" 	desc="Client²ÎÊý" />
-		<entry name="UdpClientSendBuffSize"		type="uint32"	defaultvalue="32768" 	desc="Client²ÎÊý" />
+		<entry name="UdpListenRecvBuffSize"		type="uint32"	defaultvalue="65536" 	desc="Acceptå‚æ•°" />
+		<entry name="UdpListenSendBuffSize"		type="uint32"	defaultvalue="65536" 	desc="Acceptå‚æ•°" />
+		<entry name="UdpClientRecvBuffSize"		type="uint32"	defaultvalue="32768" 	desc="Clientå‚æ•°" />
+		<entry name="UdpClientSendBuffSize"		type="uint32"	defaultvalue="32768" 	desc="Clientå‚æ•°" />
 	</struct>
 
 	<!--ConnectSvr Info -->
-	<struct name="ConnSvrInfo" version="1" desc="ÓëÆäËû½ø³ÌÍ¨ÐÅÐÅÏ¢">
+	<struct name="ConnSvrInfo" version="1" desc="ä¸Žå…¶ä»–è¿›ç¨‹é€šä¿¡ä¿¡æ¯">
 		<entry name="LogicSvrIDStr" 		type="string" size="20" />
 		<entry name="LogicSvrID"			type="int" defaultvalue="0" />
 	</struct>
 
-	<struct name="NetConnCfg" version="1" desc="Ö÷ÅäÖÃ½á¹¹">
+	<struct name="NetConnCfg" version="1" desc="ä¸»é…ç½®ç»“æž„">
 		<entry name="AppNameStr" 			type="string" size="20" />
 		<entry name="ProcIDStr" 			type="string" size="20" />
 		<entry name="ProcID"				type="int" defaultvalue="0" />
 		<entry name="BusGCIMKey" 			type="int" />
 		<entry name="ShmKey"				type="int" />
-		<entry name="ConnLimitPerSec" 		type="int" 	defaultvalue="0" 	desc="Ã¿ÃëÁ´½ÓÏÞÖÆ, 0±íÊ¾²»ÏÞÖÆ"/>
-		<entry name="RecvPkgLimitPerSec"  	type="int" 						desc="Ã¿Ãë°üÏÞÖÆ" />
+		<entry name="ConnLimitPerSec" 		type="int" 	defaultvalue="0" 	desc="æ¯ç§’é“¾æŽ¥é™åˆ¶, 0è¡¨ç¤ºä¸é™åˆ¶"/>
+		<entry name="RecvPkgLimitPerSec"  	type="int" 						desc="æ¯ç§’åŒ…é™åˆ¶" />
 		<entry name="ListenIP" 				type="string" 					size="20" />
 
 		<entry name="TcpConfig"				type="TcpConfig"/>
