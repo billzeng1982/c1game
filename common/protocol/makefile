@@ -5,7 +5,7 @@ PROTO_BIN_DIR = ../../deploy/protocol
 .PHONY : all clean
 
 all:
-	@$(TDR) -B common_proto.xml              -o $(PROTO_BIN_DIR)/common_proto.bin
+	@$(TDR) -B common_proto.xml -o $(PROTO_BIN_DIR)/common_proto.bin
 	@$(TDR) -B common_proto.xml cs_proto.xml -o $(PROTO_BIN_DIR)/cs_proto.bin
 	@$(TDR) -B common_proto.xml idip_proto.xml -o $(PROTO_BIN_DIR)/idip_proto.bin
 	@$(TDR) -B common_proto.xml ss_proto.xml -o $(PROTO_BIN_DIR)/ss_proto.bin
