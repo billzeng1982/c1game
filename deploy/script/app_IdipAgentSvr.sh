@@ -18,7 +18,7 @@ start()
 {
 	echo "IdipAgentSvr$suffix ... start";
 	cd ../services/IdipAgentSvr;
-	./IdipAgentSvr$suffix --work-dir=../../ --daemon --sample --sample
+	./IdipAgentSvr$suffix --work-dir=../../ --daemon --sample
 	cd -;
 }
 

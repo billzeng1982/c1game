@@ -65,6 +65,7 @@ class MainHandler(tornado.web.RequestHandler):
             self.write("can shu cuo wu~")
             self.finish()
             return
+            
     def _agent_responce(self, response):
         split_ch = chr(0)
         print response.body
@@ -79,6 +80,7 @@ class MainHandler(tornado.web.RequestHandler):
             for content in contents:
                 self.write(content)
         self.finish()
+        
     def _send_request(self, url, data, callback):
         client = tornado.httpclient.AsyncHTTPClient()
         request = tornado.httpclient.HTTPRequest(url=url, method="POST", body=data, connect_timeout=3)

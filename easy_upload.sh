@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 SvrList=services/SerialNumSvr/SerialNumSvr,\
 services/FriendSvr/FriendSvr,\
@@ -53,8 +53,6 @@ services/IdipAgentSvr/IdipAgentSvrD,\
 services/ClusterSdkCbSvr/ClusterSdkCbSvr.py,\
 services/MineDBSvr/MineDBSvrD,\
 services/MineSvr/MineSvrD
-
-
 
 
 python tardeploy.py -s --dname=$SvrDList --dir=protocol/,gamedata/

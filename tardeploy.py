@@ -135,13 +135,6 @@ def targz_filter(tarinfo):
     return None
 
 
-
-
-
-
-
-
-
 def get_table_file():
     """
     得到要过滤的数据文件
@@ -192,8 +185,6 @@ def main():
         shutil.move(output_file, old_cwd)
         shutil.move(PACKED_FLIE_LIST_NAME, old_cwd)
     os.chdir(old_cwd)
-
-
 
 
 if __name__ == "__main__":

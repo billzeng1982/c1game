@@ -39,5 +39,5 @@ do
 done
 
 ##清除好友信息
-redis-cli del PlayerInfo
+redis-cli -p 6501 del PlayerInfo
 #redis-cli FLUSHALL
