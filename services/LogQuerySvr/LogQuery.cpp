@@ -6,7 +6,6 @@
 #include "LogQuerySvrMsgLayer.h"
 #include "PythonBinding.h"
 #include "RoleTableMgr.h"
-#include <curl/curl.h>
 
 extern unsigned char g_szMetalib_LogQuerySvrCfg[];
 

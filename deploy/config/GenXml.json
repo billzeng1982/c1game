@@ -48,7 +48,7 @@
             "FightConnPort"     :   "6300",
             "DirSvrHttpPort"    :   "8000",
             "IdipAgentHttpPort" :   "8082",
-            "IdipAgentRegPort"  :   "8090",
+            "IdipAgentRegPort"  :   "8060",
             "DirSvrPort"        :   "3150",
             "LoginandPayPort"   :   "8009",
             "ZoneSvrRegPort"    :   "8081",
