@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="gb2312" standalone="yes" ?>
 
 <metalib tagsetversion="1" name="IdipAgentSvrCfg" version="1" >
-  <struct name="IdipAgentSvrCfg"    version="1"     desc="Ö÷ÅäÖÃ½á¹¹">
+  <struct name="IdipAgentSvrCfg"    version="1"     desc="ä¸»é…ç½®ç»“æž„">
     <entry name="ProcIDStr" 	      type="string"   size="20" />
     <entry name="ProcID"		        type="int"      defaultvalue="0"/>
     <entry name="ZoneSvrIDStr" 	    type="string"   size="20" />
@@ -21,17 +21,17 @@
     <entry name="IdipAgentRegUrl"   type="string"   size="128" />
 
     <entry name="SvrId"	    		    type="int" />
-    <entry name="SvrName"               type="string"   size="64"           desc="·þÎñÆ÷Ãû×Ö" />
+    <entry name="SvrName"               type="string"   size="64"           desc="æœåŠ¡å™¨åå­—" />
     <entry name="RegInterval"	      type="uint32" />
 
     <entry name="HttpSvrPubIp"      type="string"     size="128" />
     <entry name="HttpSvrPriIp"      type="string"     size="128" />
     <entry name="HttpSvrPort" 	    type="int"   	  defaultvalue="80" />
-    <entry name="PassRemoteHost"    type="string"       size="128"      desc="Ö»½ÓÊÜÕâ¸öIpµØÖ·µÄÇëÇó"/>
-    <entry name="ClientThreadNum" 	type="int" 		  defaultvalue="10" 	desc="HttpClientµÄ¹¤×÷Ïß³ÌÊýÁ¿"/>
-    <entry name="ServerThreadNum" 	type="int" 		  defaultvalue="1" 	  desc="HttpServerµÄ¹¤×÷Ïß³ÌÊýÁ¿"/>
+    <entry name="PassRemoteHost"    type="string"       size="128"      desc="åªæŽ¥å—è¿™ä¸ªIpåœ°å€çš„è¯·æ±‚"/>
+    <entry name="ClientThreadNum" 	type="int" 		  defaultvalue="10" 	desc="HttpClientçš„å·¥ä½œçº¿ç¨‹æ•°é‡"/>
+    <entry name="ServerThreadNum" 	type="int" 		  defaultvalue="1" 	  desc="HttpServerçš„å·¥ä½œçº¿ç¨‹æ•°é‡"/>
     <entry name="ThreadQBaseShmKey" type="int" 		  defaultvalue="0" />
-    <entry name="ThreadQSize" 		  type="uint32"	  desc="Ö÷´ÓÏß³Ì¼äÍ¨ÐÅ¹ÜµÀ´óÐ¡" />
+    <entry name="ThreadQSize" 		  type="uint32"	  desc="ä¸»ä»Žçº¿ç¨‹é—´é€šä¿¡ç®¡é“å¤§å°" />
   </struct>
 </metalib>
 

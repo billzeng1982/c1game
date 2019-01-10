@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="GBK" standalone="yes" ?>
 <metalib tagsetversion="1" name="ZoneSvrCfg" version="1" >
-	<struct name="ZoneSvrCfg" version="1" desc="Ö÷ÅäÖÃ½á¹¹">
+	<struct name="ZoneSvrCfg" version="1" desc="ä¸»é…ç½®ç»“æž„">
 		<entry name="ProcIDStr" 			type="string" 	size="20" />
 		<entry name="ProcID"				type="int" 		defaultvalue="0"/>
 		<entry name="AccountSvrIDStr" 		type="string" 	size="20" />
@@ -41,40 +41,40 @@
         <entry name="ZoneHttpConnID"        type="int"   defaultvalue="0" />
 		<entry name="BusGCIMKey" 			type="int" />
 
-		<entry name="MaxOnlinePlayer" 		type="int" 		desc="×î´óÔÚÏßÍæ¼ÒÊý,Í¬ZoneConnµÄMaxFD"/>
-		<entry name="PlayerUptDBFreq" 		type="int" 		desc="Íæ¼Ò¸üÐÂdbÆµÂÊ, Ãë" 		 		defaultvalue="300" />
-		<entry name="ReconnectWaitTime" 	type="int" 		desc="ÖØÁ¬µÈ´ýÊ±¼ä, Ãë, Ìî0Ö±½Ólogout"  defaultvalue="60"/>
-		<entry name="LoginTimeOut"			type="int" 		desc="µÇÂ¼³¬Ê±" 				 		defaultvalue="10"/>
+		<entry name="MaxOnlinePlayer" 		type="int" 		desc="æœ€å¤§åœ¨çº¿çŽ©å®¶æ•°,åŒZoneConnçš„MaxFD"/>
+		<entry name="PlayerUptDBFreq" 		type="int" 		desc="çŽ©å®¶æ›´æ–°dbé¢‘çŽ‡, ç§’" 		 		defaultvalue="300" />
+		<entry name="ReconnectWaitTime" 	type="int" 		desc="é‡è¿žç­‰å¾…æ—¶é—´, ç§’, å¡«0ç›´æŽ¥logout"  defaultvalue="60"/>
+		<entry name="LoginTimeOut"			type="int" 		desc="ç™»å½•è¶…æ—¶" 				 		defaultvalue="10"/>
 
-		<entry name="ReportInterval"		type="uint32"	defaultvalue="60"  desc="ÉÏ±¨×´Ì¬µ½ClusterGate¼ä¸ô Ãë"/>
+		<entry name="ReportInterval"		type="uint32"	defaultvalue="60"  desc="ä¸ŠæŠ¥çŠ¶æ€åˆ°ClusterGateé—´éš” ç§’"/>
 
-   	 	<entry name="LoginSDKSwitch"		type="int"		defaultvalue="0"        desc="µÇÂ¼Ê±ÊÇ·ñÐèÒªÈ¥SDK·þÎñÆ÷ÑéÖ¤¿ª¹Ø 0:²»ÐèÒª 1:ÐèÒª"/>
-    	<entry name="GmDebugSwitch"   		type="int"    	defaultvalue="0"        desc="ÊÇ·ñ¿ªÆôgmµ÷ÊÔ¹¦ÄÜ 0£º²»ÐèÒª 1£ºÐèÒª"/>
-        <entry name="TestPaySwitch"         type="int"      defaultvalue="0"        desc="ÊÇ·ñ¿ªÆô²âÊÔ¸¶·Ñ¹¦ÄÜ 0£º²»¿ªÆô 1£º¿ªÆô"/>
-        <entry name="SerialNumSwitch"       type="int"      defaultvalue="0"      desc="ÊÇ·ñ´ò¿ªÀñÆ·Âë 0:²»´ò¿ª 1:´ò¿ª"/>
-        <entry name="GuildFightSwitch"      type="int"      defaultvalue="1"      desc="¾üÍÅÕ½¿ª¹Ø 0:²»´ò¿ª 1:´ò¿ª"/>
-        <entry name="MineSwitch"            type="int"      defaultvalue="1"      desc="¿ó¶´¿ª¹Ø 0:²»´ò¿ª 1:´ò¿ª"/>
-		<!--Êý¾Ý²Ö¿âÈÕÖ¾ÅäÖÃ-->
+   	 	<entry name="LoginSDKSwitch"		type="int"		defaultvalue="0"        desc="ç™»å½•æ—¶æ˜¯å¦éœ€è¦åŽ»SDKæœåŠ¡å™¨éªŒè¯å¼€å…³ 0:ä¸éœ€è¦ 1:éœ€è¦"/>
+    	<entry name="GmDebugSwitch"   		type="int"    	defaultvalue="0"        desc="æ˜¯å¦å¼€å¯gmè°ƒè¯•åŠŸèƒ½ 0ï¼šä¸éœ€è¦ 1ï¼šéœ€è¦"/>
+        <entry name="TestPaySwitch"         type="int"      defaultvalue="0"        desc="æ˜¯å¦å¼€å¯æµ‹è¯•ä»˜è´¹åŠŸèƒ½ 0ï¼šä¸å¼€å¯ 1ï¼šå¼€å¯"/>
+        <entry name="SerialNumSwitch"       type="int"      defaultvalue="0"      desc="æ˜¯å¦æ‰“å¼€ç¤¼å“ç  0:ä¸æ‰“å¼€ 1:æ‰“å¼€"/>
+        <entry name="GuildFightSwitch"      type="int"      defaultvalue="1"      desc="å†›å›¢æˆ˜å¼€å…³ 0:ä¸æ‰“å¼€ 1:æ‰“å¼€"/>
+        <entry name="MineSwitch"            type="int"      defaultvalue="1"      desc="çŸ¿æ´žå¼€å…³ 0:ä¸æ‰“å¼€ 1:æ‰“å¼€"/>
+		<!--æ•°æ®ä»“åº“æ—¥å¿—é…ç½®-->
 		<entry name="LogCfgPath"			type="string"	size="128" />
 		<entry name="CltLogTdrPath"			type="string"	size="128" 				desc="dwlog_clt.bin path"  defaultvalue=""/>
 		<entry name="SvrLogTdrPath"			type="string"   size="128" 				desc="dwlog_svr.bin path"/>
-		<entry name="PlayerBufferSize"		type="uint32"	defaultvalue="25600"    desc="Ã¿¸öPlayerµÄ°ü»º´æ¶ÓÁÐ´óÐ¡" />
+		<entry name="PlayerBufferSize"		type="uint32"	defaultvalue="25600"    desc="æ¯ä¸ªPlayerçš„åŒ…ç¼“å­˜é˜Ÿåˆ—å¤§å°" />
 
-		<!--·þÎñÆ÷ÅäÖÃ-->
-		<entry name="SvrId"					type="uint16"	  					desc="·þÎñÆ÷id" />
-		<entry name="SvrName"				type="string"	size="64"   		desc="·þÎñÆ÷Ãû×Ö" />
-		<entry name="SvrIpStr"				type="string"	size="64"   		desc="·þÎñÆ÷ip" />
-		<entry name="SvrIp"					type="int32"	  					desc="·þÎñÆ÷ip" />
-		<entry name="SvrPort"				type="uint16"	  					desc="·þÎñÆ÷¶Ë¿Ú" />
-        <entry name="SvrOpenTime"			type="string"	size="64"   		desc="·þÎñÆ÷¿ª·þÊ±¼ä" />
-        <entry name="SvrFinishUptTime"    type="string" size="64"       desc="·þÎñÆ÷¸üÐÂÍê³ÉÊ±¼ä" />
+		<!--æœåŠ¡å™¨é…ç½®-->
+		<entry name="SvrId"					type="uint16"	  					desc="æœåŠ¡å™¨id" />
+		<entry name="SvrName"				type="string"	size="64"   		desc="æœåŠ¡å™¨åå­—" />
+		<entry name="SvrIpStr"				type="string"	size="64"   		desc="æœåŠ¡å™¨ip" />
+		<entry name="SvrIp"					type="int32"	  					desc="æœåŠ¡å™¨ip" />
+		<entry name="SvrPort"				type="uint16"	  					desc="æœåŠ¡å™¨ç«¯å£" />
+        <entry name="SvrOpenTime"			type="string"	size="64"   		desc="æœåŠ¡å™¨å¼€æœæ—¶é—´" />
+        <entry name="SvrFinishUptTime"    type="string" size="64"       desc="æœåŠ¡å™¨æ›´æ–°å®Œæˆæ—¶é—´" />
 
-		<!--Ä¿Â¼·þÎñÆ÷-->
-		<entry name="DirSvrIpStr"			type="string"	size="64"   		desc="Ä¿Â¼·þÎñÆ÷ip" />
-		<entry name="DirSvrIp"				type="int32"	  					desc="Ä¿Â¼·þÎñÆ÷ip" />
-		<entry name="DirSvrPort"			type="uint16"	  					desc="Ä¿Â¼·þÎñÆ÷¶Ë¿Ú" />
+		<!--ç›®å½•æœåŠ¡å™¨-->
+		<entry name="DirSvrIpStr"			type="string"	size="64"   		desc="ç›®å½•æœåŠ¡å™¨ip" />
+		<entry name="DirSvrIp"				type="int32"	  					desc="ç›®å½•æœåŠ¡å™¨ip" />
+		<entry name="DirSvrPort"			type="uint16"	  					desc="ç›®å½•æœåŠ¡å™¨ç«¯å£" />
 
-		<entry name="FeedBackUrl"			type="string"	size="64"   		desc="´íÎó·´À¡µÄURL" />
+		<entry name="FeedBackUrl"			type="string"	size="64"   		desc="é”™è¯¯åé¦ˆçš„URL" />
 	</struct>
 
 </metalib>
